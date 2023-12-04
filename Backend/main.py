@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import Api
 from Application.config import LocalDevelopmentConfig
 from Application.database import db
+import flask_excel as excel
 from Application import workers
 from Application.Backend_Jobs.Task import task
 import os
@@ -21,6 +22,8 @@ def create_app():
 
   db.init_app(app)
   api = Api(app)
+  api.init_app(app)
+  excel.init_excel(app)
   
   with app.app_context():  
     celery = workers.celery
@@ -33,17 +36,16 @@ def create_app():
     )
     celery.Task = workers.ContextTask
 
-    # if db/db.sqlite does not exist, create it
-    if not os.path.exists(app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///', '')):
-      db.create_all()
-      print("Database created")
-    else:
-      print("Database already exists")
-
 
   return app, api, celery
 
 app, api, celery = create_app()
+
+
+
+from Application.APIs.User.login_signup_logout import Login, Signup
+
+api.add_resource(Login, '/api/v1/login')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
