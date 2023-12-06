@@ -15,6 +15,7 @@ class User(db.Model,UserMixin):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=True)
     role=db.Column(db.Integer, nullable=False)
+    is_manager_active = db.Column(db.Boolean, default=False)
     account_created_at = db.Column(db.String, nullable=False)
     jwt_token = db.Column(db.String, nullable=True)
 
@@ -73,3 +74,16 @@ class Order(db.Model):
 
 
 
+class CategoryRequest(db.Model):
+  __tablename__ = 'category_request'
+  id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+  category_name = db.Column(db.String(50), nullable=False)
+  description = db.Column(db.String(50))
+  create_date = db.Column(db.DateTime, server_default=db.func.now())
+  type = db.Column(db.String(50), nullable=False)
+  request_status = db.Column(db.String(50), nullable=False)
+  request_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+  last_update_date = db.Column(db.DateTime, server_default=db.func.now())
+  approved_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+  approved_date = db.Column(db.DateTime, server_default=db.func.now())
+  

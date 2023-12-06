@@ -7,7 +7,9 @@ import moment
 
 # level 0 -> guest
 # level 1 -> user
-# level 2 -> admin
+# level 2 -> manger
+# level 3 -> admin
+
 
 def level_required(minimum_level):
   def decorator(f):

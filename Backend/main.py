@@ -49,10 +49,13 @@ def create_app():
 app, api, celery = create_app()
 
 
-from Application.APIs.User.LoginLogoutSignUp import Login, Logout
+from Application.APIs.User.LoginLogoutSignUp import Login, Logout, SignUp
 
-api.add_resource(Login, '/api/v1/login')
-api.add_resource(Logout, '/api/v1/logout')
+api.add_resource(Login, '/api/v1/user/login')
+api.add_resource(Logout, '/api/v1/user/logout')
+api.add_resource(SignUp, '/api/v1/user/signup')
+
+
 
 if __name__ == "__main__":
   app.run(debug=True, host='0.0.0.0', port=5000)

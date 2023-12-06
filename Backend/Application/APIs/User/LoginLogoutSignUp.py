@@ -97,3 +97,56 @@ class Logout(Resource):
     except Exception as ex:
       app.logger.error(f"Unexpected error in Logout: {str(ex)}")
       return make_response(jsonify({'success': False, 'error': 'Internal Server Error'}), 500)
+
+
+
+SingUp_parser = reqparse.RequestParser()
+SingUp_parser.add_argument("username", type=str, required=True, help="Username is required")
+SingUp_parser.add_argument("email", type=str, required=True, help="Email is required")
+SingUp_parser.add_argument("password", type=str, required=True, help="Password is required") 
+SingUp_parser.add_argument("first_name", type=str, required=True, help="First Name is required")
+SingUp_parser.add_argument("last_name", type=str, required=False, help="Last Name is required")
+SingUp_parser.add_argument("role", type=str, required=True, help="Role is required")
+
+class SignUp(Resource):
+  
+  def post(self):
+    try:
+      args = SingUp_parser.parse_args()
+      print(args)
+      
+      if not args['username'] or not args['email'] or not args['password'] or not args['first_name'] or not args['role']:
+        raise BusinessValidationError("Username, Email, Password, First Name and Role are required")
+      
+      user = User.query.filter_by(email=args['email']).first()
+      
+      if user:
+        raise BusinessValidationError(409, "USER409", "User already exists")
+      
+      if args['role'] == 'manager':
+        role = 2
+      else:
+        role = 1
+      
+      new_user = User(
+        username=args['username'],
+        email=args['email'],
+        password=args['password'],
+        first_name=args['first_name'],
+        last_name=args['last_name'],
+        role=role,
+        account_created_at=datetime.now()
+      )
+    
+      db.session.add(new_user)
+      db.session.commit()
+      
+      return make_response(jsonify({'success': True, 'message': 'Successfully signed up'}), 200)
+    
+    except BusinessValidationError as e:
+      return make_response(jsonify({'success': False, 'error': str(e)}), 400)
+    except Exception as ex:
+      app.logger.error(f"Unexpected error in SignUp: {str(ex)}")
+      return make_response(jsonify({'success': False, 'error': 'Internal Server Error'}), 500)
+    
+    
