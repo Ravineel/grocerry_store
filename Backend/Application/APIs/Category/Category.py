@@ -34,7 +34,7 @@ class CategoryGeneralAPI(Resource):
 class CategoryAdminAPI(Resource):
   
   @level_required(min_level=3)
-  def post(self):
+  def post(current_user, self):
     try:
       parser = reqparse.RequestParser()
       parser.add_argument('category_name', type=str, required=True)
@@ -42,10 +42,12 @@ class CategoryAdminAPI(Resource):
       args = parser.parse_args()
       category_name = args['category_name']
       description = args['description']
+      created_by = current_user.id
+      
       category = Category.query.filter_by(category_name=category_name).first()
       if category:
         raise BusinessValidationError(400, "CATEGORY_ALREADY_EXISTS", "Category already exists!")
-      category = Category(category_name=category_name, description=description)
+      category = Category(category_name=category_name, description=description, create_by=created_by, last_update_by=created_by)
       db.session.add(category)
       db.session.commit()
       return {"message": "Category created successfully!"}, 200
@@ -56,7 +58,7 @@ class CategoryAdminAPI(Resource):
   
   
   @level_required(min_level=3)
-  def patch(self):
+  def patch(current_user, self):
     try:
       parser = reqparse.RequestParser()
       parser.add_argument('category_id', type=int, required=True)
@@ -66,14 +68,96 @@ class CategoryAdminAPI(Resource):
       category_id = args['category_id']
       category_name = args['category_name']
       description = args['description']
+      updated_by = current_user.id
       category = Category.query.filter_by(category_id=category_id).first()
       if not category:
         raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
       category.category_name = category_name
       category.description = description
+      category.last_update_by = updated_by
+      category.last_update_date = datetime.now()
       db.session.commit()
       return {"message": "Category updated successfully!"}, 200
     except BusinessValidationError as e:
       raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
+
+  @level_required(min_level=3)
+  def delete(current_user, self):
+    try:
+      parser = reqparse.RequestParser()
+      parser.add_argument('category_id', type=int, required=True)
+      args = parser.parse_args()
+      category_id = args['category_id']
+      category = Category.query.filter_by(category_id=category_id).first()
+      if not category:
+        raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
+      db.session.delete(category)
+      db.session.commit()
+      return {"message": "Category deleted successfully!"}, 200
+    except BusinessValidationError as e:
+      raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
+    except Exception as e:
+      raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
+    
+
+
+
+class CategoryRequestAPI(Resource):
+  
+  @level_required(min_level=2)
+  def post(current_user, self):
+    try:
+      parser = reqparse.RequestParser()
+      parser.add_argument('category_id', type=str, required=True)
+      parser.add_argument('has_approved', type=str, required=True)
+      args = parser.parse_args()
+      category_name = args['category_id']
+      approval = args['has_approved']
+   
+      approved_by = current_user.id
+      approved_date = datetime.now()
+      
+      category_request = CategoryRequest.query.filter_by(category_id=category_id).first()
+     
+      if not category_request:
+        raise BusinessValidationError(400, "CATEGORY_REQUEST_NOT_FOUND", "Category request not found!")
+     
+      if approval == "false":
+        category_request.request_status = "REJECTED"
+        category_request.approved_by = approved_by
+        category_request.approved_date = approved_date
+        category_request.last_update_date = datetime.now()
+        db.session.commit()
+        return {"message": "Category request rejected successfully!"}, 200
+      elif approval == "true":
+        category_request.request_status = "APPROVED"
+        category_request.approved_by = approved_by
+        category_request.approved_date = approved_date
+        category_request.last_update_date = datetime.now()
+        db.session.commit()
+        
+        if category_request.type == "CREATE":
+          category = Category(category_name=category_request.category_name, description=category_request.description, create_by=category_request.request_by, last_update_by=category_request.approved_by)
+          db.session.add(category)
+          db.session.commit()
+        
+        elif category_request.type == "UPDATE":
+          category = Category.query.filter_by(category_name=category_request.category_name).first()
+          if not category:
+            raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
+          category.category_name = category_request.category_name
+          category.description = category_request.description
+          category.last_update_by = category_request.request_by
+          category.last_update_date = datetime.now()
+          db.session.commit() 
+          
+        elif category_request.type == "DELETE":
+          category = Category.query.filter_by(category_name=category_request.category_name).first()
+          if not category:
+            raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
+          db.session.delete(category)
+          db.session.commit()
+  
+        return {"message": "Category request approved successfully!"}, 200

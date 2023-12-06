@@ -44,7 +44,10 @@ class Category(db.Model):
   description = db.Column(db.String(50))
   create_date = db.Column(db.DateTime, server_default=db.func.now())
   last_update_date = db.Column(db.DateTime, server_default=db.func.now())
-
+  create_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+  last_update_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+  products = db.relationship('Product', backref='category', lazy=True, cascade='all, delete-orphan')
+   
 class Product(db.Model):
   __tablename__ = 'product'
   product_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
