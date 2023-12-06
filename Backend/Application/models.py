@@ -80,7 +80,7 @@ class CategoryRequest(db.Model):
   category_name = db.Column(db.String(50), nullable=False)
   description = db.Column(db.String(50))
   create_date = db.Column(db.DateTime, server_default=db.func.now())
-  type = db.Column(db.String(50), nullable=False)
+  type = db.Column(db.String(50), nullable=False) # CREATE, UPDATE, DELETE
   request_status = db.Column(db.String(50), nullable=False)
   request_by = db.Column(db.Integer, db.ForeignKey('user.id'))
   last_update_date = db.Column(db.DateTime, server_default=db.func.now())
