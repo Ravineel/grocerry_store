@@ -5,7 +5,7 @@ from flask import request,jsonify,make_response
 from Application.models import User
 from .error_handling import *
 import moment
-from Application.security import datastore
+
 
 
 class TokenExpiredError(Exception):
@@ -28,7 +28,7 @@ def token_required(f):
   @wraps(f)
   def decorated(*args, **kwargs):
     token = None
-    auth_header = request.headers.get('Authorization: Bearer')
+    auth_header = request.headers.get('Authorization')
     print(auth_header)
     if auth_header:
       try:
@@ -45,8 +45,8 @@ def token_required(f):
       data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
       if moment.unix(data["exp"]) < moment.now():
         raise TokenExpiredError("error")
-      
-      current_user = datastore.find_user(id = data['id'])
+
+      current_user = User.query.filter_by(public_id=data['public_id']).first()
       
       if current_user.jwt_token != token:
         raise TokenInvalidError()
@@ -63,3 +63,5 @@ def token_required(f):
     return f(current_user, *args, **kwargs)
 
   return decorated
+
+  

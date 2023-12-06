@@ -1,24 +1,61 @@
 from main import app
-from Application.security import datastore
-from Application.models import db, Role
-from flask_security import hash_password
-from werkzeug.security import generate_password_hash
+
+from Application.db import db
+from Application.models import User, Category, Product, Order
+
 
 
 with app.app_context():
+    print("Creating tables and initial data...")
+    
     db.create_all()
-    datastore.find_or_create_role(name="admin", description="User is an admin")
-    datastore.find_or_create_role(
-        name="user", description="User for the application")
+    
+    print("Tables created.")
+    
+    # Create initial data
+    print("Adding initial data...")
+    
+    print("Adding Admin User...")
+    admin_user = User(
+        username='admin',
+        password='admin_password',  # Make sure to hash the password in a real-world scenario
+        email='admin@example.com',
+        first_name='Admin',
+        last_name='User',
+        role='admin',
+        account_created_at='2023-01-01',
+        jwt_token=None  # You might want to handle JWT tokens differently
+    )
+    
+    print("Adding Normal Users...")
+
+    normal_user1 = User(
+        username='user1',
+        password='user1_password',
+        email='user1@example.com',
+        first_name='User',
+        last_name='One',
+        role='user',
+        account_created_at='2023-01-02',
+        jwt_token=None
+    )
+
+    normal_user2 = User(
+        username='user2',
+        password='user2_password',
+        email='user2@example.com',
+        first_name='User',
+        last_name='Two',
+        role='user',
+        account_created_at='2023-01-03',
+        jwt_token=None
+    )
+
+    # Add data to the session
+    db.session.add_all([admin_user, normal_user1, normal_user2])
+
+    
+    print("Users added.")
+    # Commit the changes
     db.session.commit()
-    if not datastore.find_user(email="admin@email.com"):
-        datastore.create_user(
-            email="admin@email.com", username="admin",first_name='admin',last_name='',password_hash=generate_password_hash("admin"), roles=["admin"])
-    if not datastore.find_user(email="user1@email.com"):
-        datastore.create_user(
-            email="user1@email.com",  username="user01",first_name='user',last_name='', password_hash=generate_password_hash("user1"), roles=["user"])
-    if not datastore.find_user(email="user2@email.com"):
-        datastore.create_user(
-            email="user2@email.com",  username="user02",first_name='user02',last_name='', password_hash=generate_password_hash("user2"), roles=["user"])
-    db.session.commit()
-    print("Done")
+    print("Tables created and initial data added.")

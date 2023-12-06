@@ -1,36 +1,41 @@
-from .database import db
-from flask import current_app as app
-from flask_security  import UserMixin, RoleMixin
 
-class UserRole(db.Model):
-  __tablename__ = 'user_role'
-  id = db.Column(db.Integer(), primary_key=True)
-  user_id = db.Column('user_id', db.Integer(), db.ForeignKey('user.id'))
-  role_id = db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
- 
-class User(db.Model, UserMixin):
-  id = db.Column(db.Integer, primary_key=True)
-  first_name = db.Column(db.String(50), nullable=False)
-  last_name = db.Column(db.String(50))
-  email = db.Column(db.String(50), nullable=False, unique=True)
-  username = db.Column(db.String(50), nullable=False, unique=True)
-  password_hash = db.Column(db.String(255), nullable=False)
-  fs_uniquifier = db.Column(db.String(255), unique=True)
-  token = db.Column(db.String(255), unique=True)
-  active = db.Column(db.Boolean, default=False)
-  last_login = db.Column(db.DateTime)
-  create_date = db.Column(db.DateTime, server_default=db.func.now())
-  last_update_date = db.Column(db.DateTime, server_default=db.func.now())
-  roles = db.relationship('Role', secondary='user_role', backref=db.backref('users', lazy='dynamic'))  
- 
-class Role(db.Model,RoleMixin):
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String(50), nullable=False, unique=True)
-  description = db.Column(db.String(50))
-  create_date = db.Column(db.DateTime, server_default=db.func.now())
+from flask_login import UserMixin
+from .db import db
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask import current_app as app
+
+
+
+class User(db.Model,UserMixin):
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, autoincrement=True,primary_key=True)
+    username = db.Column(db.String, unique=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+    email = db.Column(db.String, unique=True, nullable=False)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=True)
+    role=db.Column(db.String, nullable=False)
+    account_created_at = db.Column(db.String, nullable=False)
+    jwt_token = db.Column(db.String, nullable=True)
+
+    
+    def get_id(self):
+      return self.id
+    
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+    
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 
 class Category(db.Model):
+  __tablename__ = 'category'
   category_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
   category_name = db.Column(db.String(50), nullable=False, unique=True)
   description = db.Column(db.String(50))
@@ -38,6 +43,7 @@ class Category(db.Model):
   last_update_date = db.Column(db.DateTime, server_default=db.func.now())
 
 class Product(db.Model):
+  __tablename__ = 'product'
   product_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
   product_name = db.Column(db.String(50), nullable=False, unique=True)
   description = db.Column(db.String(50))
@@ -50,6 +56,7 @@ class Product(db.Model):
   last_update_date = db.Column(db.DateTime, server_default=db.func.now())
 
 class Order(db.Model):
+  __tablename__ = 'order'
   id = db.Column(db.Integer, primary_key=True, autoincrement=True)
   order_id = db.Column(db.Integer, nullable=False)
   order_date = db.Column(db.DateTime, nullable=False)

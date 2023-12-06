@@ -1,6 +1,10 @@
 // initial state
 const state = () => ({
   user: [],
+  isAuthenticated: false,
+  token: null,
+  errors: [],
+  loading: false,
 });
 
 // getters

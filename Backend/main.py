@@ -1,18 +1,24 @@
 from flask import Flask
-from flask_restful import Api
-from Application.config import LocalDevelopmentConfig
-from Application.database import db
-import flask_excel as excel
+from flask_cors import CORS
+from config import LocalDevelopmentConfig
+from Application.db import db
 from Application import workers
-from Application.Backend_Jobs.Task import task
+from flask_restful import Api
+import flask_excel as excel
+
 import os
+
+
 
 app = None
 api = None
 celery = None
 
+
 def create_app():
   app = Flask(__name__, template_folder='templates', static_folder='static')
+  
+  CORS(app)
   
   if os.getenv('ENV', "development") == 'Production':
     raise Exception("Not available")
@@ -35,17 +41,17 @@ def create_app():
       timezone='Asia/Kolkata',
     )
     celery.Task = workers.ContextTask
-
+  app.app_context().push()
 
   return app, api, celery
 
 app, api, celery = create_app()
 
 
-
-from Application.APIs.User.login_signup_logout import Login, Signup
+from Application.APIs.User.LoginLogoutSignUp import Login
 
 api.add_resource(Login, '/api/v1/login')
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+  app.run(debug=True, host='0.0.0.0', port=5000)
+  
