@@ -1,67 +1,59 @@
 import jwt
 from functools import wraps
-from flask import current_app as app
-from flask import request,jsonify,make_response
+from flask import current_app as app, request, jsonify
 from Application.models import User
-from .error_handling import *
+from Application.error_handling import ValidationError, TokenExpiredError, TokenInvalidError, InsufficientLevelError
 import moment
 
+# level 0 -> guest
+# level 1 -> user
+# level 2 -> admin
 
+def level_required(minimum_level):
+  def decorator(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+      token = None
+      auth_header = request.headers.get('Authorization')
 
-class TokenExpiredError(Exception):
-  def __init__(self, message):
-    super().__init__(message)
-    self.message = message
-  pass
-class TokenInvalidError(Exception):
-  def __init__(self, message):
-    super().__init__(message)
-    self.message = message
-  pass
-class TokenRequiredError(Exception):
-  def __init__(self, message):
-    super().__init__(message)
-    self.message = message
-  
+      if not auth_header:
+        raise ValidationError(401, "TK002", "Token is missing")
 
-def token_required(f):
-  @wraps(f)
-  def decorated(*args, **kwargs):
-    token = None
-    auth_header = request.headers.get('Authorization')
-    print(auth_header)
-    if auth_header:
       try:
-          token = auth_header.split(" ")[1]
+        token = auth_header.split(" ")[1]
       except IndexError:
-          raise ValidationError(401, "TK001", "malformed") 
-         
-    else:
-      token = ''
-    if not token:
-      raise ValidationError(401, "TK002", "Token is missing")
-    
-    try:
-      data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-      if moment.unix(data["exp"]) < moment.now():
-        raise TokenExpiredError("error")
+        raise ValidationError(401, "TK001", "Malformed token")
 
-      current_user = User.query.filter_by(public_id=data['public_id']).first()
+      try:
+        data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        user_level = data.get('role', 0)
+        
+        current_user = User.query.filter_by(id=data['user_id']).first()
+        
+        if not current_user:
+          raise ValidationError(401, "TK003", "User not found")
+
+        if current_user.jwt_token != token:
+          raise TokenInvalidError()
+        
+        if moment.unix(data["exp"]) < moment.now():
+          raise TokenExpiredError()
+
+        if user_level < minimum_level:
+          raise InsufficientLevelError()
+
       
-      if current_user.jwt_token != token:
+      except InsufficientLevelError as ile:
+        raise ValidationError(403, "TK006", str(ile))
+      except jwt.InvalidTokenError:
         raise TokenInvalidError()
-    
-    except TokenExpiredError as te:
-      raise ValidationError(401, "TK003", "Token has Expired!")
-    except TokenInvalidError as ti:
-      raise ValidationError(401, "TK004", "Token is Invalid!")
-    except TokenRequiredError as tr:
-      raise ValidationError(401, "TK002", "Token is Required!")
-    except Exception as e:
-      raise ValidationError(401, "TK005", "Token is Invalid!")
+      except jwt.ExpiredSignatureError:
+        raise TokenExpiredError()
+      except Exception as e:
+        raise ValidationError(401, "TK005", f"Token error: {str(e)}")
 
-    return f(current_user, *args, **kwargs)
+      return f(current_user, *args, **kwargs)
 
-  return decorated
+    return decorated
 
-  
+  return decorator

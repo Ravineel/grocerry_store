@@ -20,6 +20,7 @@ def create_app():
   
   CORS(app)
   
+  
   if os.getenv('ENV', "development") == 'Production':
     raise Exception("Not available")
   else:
@@ -48,9 +49,10 @@ def create_app():
 app, api, celery = create_app()
 
 
-from Application.APIs.User.LoginLogoutSignUp import Login
+from Application.APIs.User.LoginLogoutSignUp import Login, Logout
 
 api.add_resource(Login, '/api/v1/login')
+api.add_resource(Logout, '/api/v1/logout')
 
 if __name__ == "__main__":
   app.run(debug=True, host='0.0.0.0', port=5000)

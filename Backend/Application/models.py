@@ -14,7 +14,7 @@ class User(db.Model,UserMixin):
     email = db.Column(db.String, unique=True, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=True)
-    role=db.Column(db.String, nullable=False)
+    role=db.Column(db.Integer, nullable=False)
     account_created_at = db.Column(db.String, nullable=False)
     jwt_token = db.Column(db.String, nullable=True)
 
@@ -29,6 +29,8 @@ class User(db.Model,UserMixin):
     @password.setter
     def password(self, password):
         self.password_hash = generate_password_hash(password)
+    
+
     
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)

@@ -22,7 +22,7 @@ with app.app_context():
         email='admin@example.com',
         first_name='Admin',
         last_name='User',
-        role='admin',
+        role=2,
         account_created_at='2023-01-01',
         jwt_token=None  # You might want to handle JWT tokens differently
     )
@@ -35,7 +35,7 @@ with app.app_context():
         email='user1@example.com',
         first_name='User',
         last_name='One',
-        role='user',
+        role=1,
         account_created_at='2023-01-02',
         jwt_token=None
     )
@@ -46,13 +46,24 @@ with app.app_context():
         email='user2@example.com',
         first_name='User',
         last_name='Two',
-        role='user',
+        role=1,
+        account_created_at='2023-01-03',
+        jwt_token=None
+    )
+    
+    guest_user1 = User(
+        username='user3',
+        password='user3_password',
+        email='user3@example.com',
+        first_name='User',
+        last_name='Guest',
+        role=0,
         account_created_at='2023-01-03',
         jwt_token=None
     )
 
     # Add data to the session
-    db.session.add_all([admin_user, normal_user1, normal_user2])
+    db.session.add_all([admin_user, normal_user1, normal_user2, guest_user1])
 
     
     print("Users added.")
