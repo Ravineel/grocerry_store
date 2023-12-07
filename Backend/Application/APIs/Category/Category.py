@@ -29,7 +29,19 @@ class CategoryGeneralAPI(Resource):
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
         
-
+class CategoryByIdAPI(Resource):
+    
+    @marshal_with(category_fields)
+    def get(self, category_id):
+      try:
+        category = Category.query.filter_by(category_id=category_id).first()
+        if not category:
+          raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
+        return category, 200
+      except BusinessValidationError as e:
+        raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
+      except Exception as e:
+        raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
 
 class CategoryAdminAPI(Resource):
   
@@ -104,7 +116,34 @@ class CategoryAdminAPI(Resource):
 
 
 
+category_request_fields={
+  'category_id': fields.Integer,
+  'category_name': fields.String,
+  'description': fields.String,
+  'request_by': fields.Integer,
+  'request_date': fields.DateTime,
+  'request_status': fields.String,
+  'type': fields.String,
+  'approved_by': fields.Integer,
+  'approved_date': fields.DateTime,
+  'last_update_by': fields.Integer,
+  'last_update_date': fields.DateTime,
+  
+}
+
 class CategoryRequestAPI(Resource):
+  
+  #get all requests
+  @level_required(min_level=2)
+  @marshal_with(category_request_fields)
+  def get(current_user, self):
+    try:
+      category_requests = CategoryRequest.query.all()
+      return category_requests, 200
+    except Exception as e:
+      raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
+    
+
   
   @level_required(min_level=2)
   def post(current_user, self):
@@ -113,7 +152,7 @@ class CategoryRequestAPI(Resource):
       parser.add_argument('category_id', type=str, required=True)
       parser.add_argument('has_approved', type=str, required=True)
       args = parser.parse_args()
-      category_name = args['category_id']
+      category_id = args['category_id']
       approval = args['has_approved']
    
       approved_by = current_user.id
@@ -161,3 +200,10 @@ class CategoryRequestAPI(Resource):
           db.session.commit()
   
         return {"message": "Category request approved successfully!"}, 200
+      else:
+        raise BusinessValidationError(400, "INVALID_REQUEST", "Invalid request!")
+    except BusinessValidationError as e:
+      raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
+    except Exception as e:
+      raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
+    
