@@ -31,6 +31,7 @@ class CategoryGeneralAPI(Resource):
         
 class CategoryByIdAPI(Resource):
     
+    
     @marshal_with(category_fields)
     def get(self, category_id):
       try:
@@ -45,7 +46,7 @@ class CategoryByIdAPI(Resource):
 
 class CategoryAdminAPI(Resource):
   
-  @level_required(min_level=3)
+  @level_required(3)
   def post(current_user, self):
     try:
       parser = reqparse.RequestParser()
@@ -69,7 +70,7 @@ class CategoryAdminAPI(Resource):
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
   
   
-  @level_required(min_level=3)
+  @level_required(3)
   def patch(current_user, self):
     try:
       parser = reqparse.RequestParser()
@@ -95,7 +96,7 @@ class CategoryAdminAPI(Resource):
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
 
-  @level_required(min_level=3)
+  @level_required(3)
   def delete(current_user, self):
     try:
       parser = reqparse.RequestParser()
@@ -134,7 +135,7 @@ category_request_fields={
 class CategoryRequestAPI(Resource):
   
   #get all requests
-  @level_required(min_level=2)
+  @level_required(2)
   @marshal_with(category_request_fields)
   def get(current_user, self):
     try:
@@ -145,7 +146,7 @@ class CategoryRequestAPI(Resource):
     
 
   
-  @level_required(min_level=2)
+  @level_required(2)
   def post(current_user, self):
     try:
       parser = reqparse.RequestParser()

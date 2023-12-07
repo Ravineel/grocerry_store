@@ -52,7 +52,7 @@ app, api, celery = create_app()
 from Application.APIs.User.LoginLogoutSignUp import Login, Logout, SignUp
 from Application.APIs.Category.Category import CategoryGeneralAPI, CategoryAdminAPI, CategoryByIdAPI,CategoryRequestAPI
 from Application.APIs.Category.CategoryManager import CreateCategoryRequestByManagerAPI, UpdateCategoryRequestByManagerAPI, DeleteCategoryRequestByManagerAPI
-
+from Application.APIs.Product.Product import ProductGeneralAPI, ProductByIdAPI, ProductManagerAPI
 
 # user apis
 api.add_resource(Login, '/api/v1/user/login')
@@ -64,18 +64,27 @@ api.add_resource(CategoryGeneralAPI, '/api/v1/category/get/all')
 api.add_resource(CategoryByIdAPI, '/api/v1/category/get/<int:category_id>')
 
 # category admin apis
-api.add_resource(CategoryAdminAPI, '/api/v1/category/admin/create')
-api.add_resource(CategoryAdminAPI, '/api/v1/category/admin/update')
-api.add_resource(CategoryAdminAPI, '/api/v1/category/admin/delete')
+api.add_resource(CategoryAdminAPI, '/api/v1/category/admin/create','/api/v1/category/admin/update','/api/v1/category/admin/delete')
+
 
 # category request apis
-api.add_resource(CategoryRequestAPI, '/api/v1/category/request/get/all')
-api.add_resource(CategoryRequestAPI, '/api/v1/category/request/approval')
+api.add_resource(CategoryRequestAPI, '/api/v1/category/request/get/all','/api/v1/category/request/approval')
+
 
 # category manager apis
 api.add_resource(CreateCategoryRequestByManagerAPI, '/api/v1/category/manager/create')
 api.add_resource(UpdateCategoryRequestByManagerAPI, '/api/v1/category/manager/update')
 api.add_resource(DeleteCategoryRequestByManagerAPI, '/api/v1/category/manager/delete')
+
+# product apis
+api.add_resource(ProductGeneralAPI, '/api/v1/product/get/all')
+
+# product manager apis
+api.add_resource(ProductManagerAPI, '/api/v1/product/manager/create','/api/v1/product/manager/update','/api/v1/product/manager/delete')
+
+
+# product by id apis
+api.add_resource(ProductByIdAPI, '/api/v1/product/get/<int:product_id>')
 
 
 

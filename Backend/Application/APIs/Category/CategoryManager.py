@@ -24,7 +24,7 @@ import jwt
 
 class CreateCategoryRequestByManagerAPI(Resource):
 
-  @level_required(min_level=2)
+  @level_required(2)
   def post(current_user, self):
     try:
       parser = reqparse.RequestParser()
@@ -50,7 +50,7 @@ class CreateCategoryRequestByManagerAPI(Resource):
 
 class UpdateCategoryRequestByManagerAPI(Resource):
   
-    @level_required(min_level=2)
+    @level_required(2)
     def post(current_user, self):
       try:
         parser = reqparse.RequestParser()
@@ -78,7 +78,7 @@ class UpdateCategoryRequestByManagerAPI(Resource):
 
 class DeleteCategoryRequestByManagerAPI(Resource):
     
-      @level_required(min_level=2)
+      @level_required(2)
       def post(current_user, self):
         try:
           parser = reqparse.RequestParser()

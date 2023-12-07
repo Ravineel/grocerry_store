@@ -18,6 +18,7 @@ class User(db.Model,UserMixin):
     is_manager_active = db.Column(db.Boolean, default=False)
     account_created_at = db.Column(db.String, nullable=False)
     jwt_token = db.Column(db.String, nullable=True)
+    orders = db.relationship('Order', backref='user', lazy=True, cascade='all, delete-orphan')
 
     
     def get_id(self):
@@ -54,12 +55,18 @@ class Product(db.Model):
   product_name = db.Column(db.String(50), nullable=False, unique=True)
   description = db.Column(db.String(50))
   category_id = db.Column(db.Integer, db.ForeignKey('category.category_id'))
+  manufacturer = db.Column(db.String(50))
+  mfg_date = db.Column(db.DateTime)
   qty = db.Column(db.Integer, nullable=False)
   rate = db.Column(db.Float, nullable=False)
   unit = db.Column(db.String(50), nullable=False)
   active = db.Column(db.Boolean, default=True)
   create_date = db.Column(db.DateTime, server_default=db.func.now())
   last_update_date = db.Column(db.DateTime, server_default=db.func.now())
+  create_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+  
+  product_orders = db.relationship('Order', backref='product', lazy=True, cascade='all, delete-orphan')
+  
 
 class Order(db.Model):
   __tablename__ = 'order'
