@@ -146,7 +146,7 @@ class CategoryRequestAPI(Resource):
     
 
   
-  @level_required(2)
+  @level_required(3)
   def post(current_user, self):
     try:
       parser = reqparse.RequestParser()
@@ -162,7 +162,7 @@ class CategoryRequestAPI(Resource):
       category_request = CategoryRequest.query.filter_by(category_id=category_id).first()
      
       if not category_request:
-        raise BusinessValidationError(400, "CATEGORY_REQUEST_NOT_FOUND", "Category request not found!")
+        raise BusinessValidationError(404, "CATEGORY_REQUEST_NOT_FOUND", "Category request not found!")
      
       if approval == "false":
         category_request.request_status = "REJECTED"

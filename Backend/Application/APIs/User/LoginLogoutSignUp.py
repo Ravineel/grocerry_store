@@ -3,7 +3,7 @@ from flask_restful import Resource, reqparse
 from werkzeug.security import check_password_hash
 from Application.models import User
 from Application.db import db
-from Application.error_handling import BusinessValidationError, TokenExpiredError, TokenInvalidError, InsufficientLevelError
+from Application.error_handling import BusinessValidationError
 from Application.middleware import level_required
 from datetime import datetime, timedelta
 import jwt
@@ -18,15 +18,16 @@ class Login(Resource):
       args = login_parser.parse_args()
 
       if not args['email'] or not args['password']:
-        raise BusinessValidationError("Email and password are required")
+        raise BusinessValidationError(404, "MISSING_REQUIRED_PARAMETERS", "Email and password are required")
+       
 
       user = User.query.filter_by(email=args['email']).first()
 
       if not user:
-        raise BusinessValidationError(404, "USER404", "User not found")
+        raise BusinessValidationError(404, "USER_NOT_FOUND", "User not found")      
 
       if not check_password_hash(user.password_hash, args['password']):
-        raise BusinessValidationError(403, "USER403", "Incorrect password")
+        raise BusinessValidationError(403, "INVALID_PASSWORD_USERNAME", "Invalid password or USERNAME")
 
       # Generate JWT token with user information
       token = jwt.encode({
@@ -51,23 +52,12 @@ class Login(Resource):
       }
 
       return make_response(jsonify(response_data), 200)
-
     except BusinessValidationError as e:
-      return make_response(jsonify({'success': False, 'error': str(e)}), 400)
+      raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
+    except Exception as e:
+      raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
+    
 
-    except TokenExpiredError as te:
-      return make_response(jsonify({'success': False, 'error': 'Token has expired'}), 401)
-
-    except TokenInvalidError as ti:
-      return make_response(jsonify({'success': False, 'error': 'Token is invalid'}), 401)
-
-    except InsufficientLevelError as ire:
-      return make_response(jsonify({'success': False, 'error': 'Insufficient privileges'}), 403)
-
-    except Exception as ex:
-      # Log the exception for further debugging
-      app.logger.error(f"Unexpected error in Login: {str(ex)}")
-      return make_response(jsonify({'success': False, 'error': 'Internal Server Error'}), 500)
 
 
 logout_parser = reqparse.RequestParser()
@@ -89,15 +79,13 @@ class Logout(Resource):
         
         return make_response(jsonify({'success': True, 'message': 'Successfully logged out'}), 200)
       else:
-        raise BusinessValidationError(404, "USER404", "User not found")
-
+        raise BusinessValidationError(400, "USER_NOT_FOUND", "User not found")
     except BusinessValidationError as e:
-      return make_response(jsonify({'success': False, 'error': str(e)}), 404)
-
-    except Exception as ex:
-      app.logger.error(f"Unexpected error in Logout: {str(ex)}")
-      return make_response(jsonify({'success': False, 'error': 'Internal Server Error'}), 500)
-
+      raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
+    except Exception as e:
+      raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
+    
+        
 
 
 SingUp_parser = reqparse.RequestParser()
@@ -116,12 +104,13 @@ class SignUp(Resource):
       print(args)
       
       if not args['username'] or not args['email'] or not args['password'] or not args['first_name'] or not args['role']:
-        raise BusinessValidationError("Username, Email, Password, First Name and Role are required")
+        raise BusinessValidationError(400, "MISSING_REQUIRED_PARAMETERS", "Username, email, password, first_name and role are required")
       
       user = User.query.filter_by(email=args['email']).first()
       
       if user:
-        raise BusinessValidationError(409, "USER409", "User already exists")
+        raise BusinessValidationError(400, "USER_ALREADY_EXISTS", "User already exists")
+        
       
       if args['role'] == 'manager':
         role = 2
@@ -142,11 +131,9 @@ class SignUp(Resource):
       db.session.commit()
       
       return make_response(jsonify({'success': True, 'message': 'Successfully signed up'}), 200)
-    
     except BusinessValidationError as e:
-      return make_response(jsonify({'success': False, 'error': str(e)}), 400)
-    except Exception as ex:
-      app.logger.error(f"Unexpected error in SignUp: {str(ex)}")
-      return make_response(jsonify({'success': False, 'error': 'Internal Server Error'}), 500)
+      raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
+    except Exception as e:
+      raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
     
     

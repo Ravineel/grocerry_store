@@ -22,7 +22,7 @@ import jwt
 
   
 
-class CreateCategoryRequestByManagerAPI(Resource):
+class RequestCategoryRequestByManagerAPI(Resource):
 
   @level_required(2)
   def post(current_user, self):
@@ -30,15 +30,24 @@ class CreateCategoryRequestByManagerAPI(Resource):
       parser = reqparse.RequestParser()
       parser.add_argument('category_name', type=str, required=True)
       parser.add_argument('description', type=str, required=True)
+      parser.add_argument('type', type=str, required=True)
       args = parser.parse_args()
       category_name = args['category_name']
       description = args['description']
+      type = args['type']
       created_by = current_user.id
       
       category = Category.query.filter_by(category_name=category_name).first()
-      if category:
+      if category and type == "CREATE":
         raise BusinessValidationError(400, "CATEGORY_ALREADY_EXISTS", "Category already exists!")
-      category_request = CategoryRequest(category_name=category_name, description=description, type="CREATE", request_status="PENDING", request_by=created_by)
+      
+      if not category and type == "UPDATE":
+        raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
+      
+      if not category and type == "DELETE":
+        raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
+      
+      category_request = CategoryRequest(category_name=category_name, description=description, type=type, request_status="PENDING", request_by=created_by)
       db.session.add(category_request)
       db.session.commit()
       return {"message": "Category request created successfully!"}, 200
@@ -47,54 +56,3 @@ class CreateCategoryRequestByManagerAPI(Resource):
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
     
-
-class UpdateCategoryRequestByManagerAPI(Resource):
-  
-    @level_required(2)
-    def post(current_user, self):
-      try:
-        parser = reqparse.RequestParser()
-        parser.add_argument('category_id', type=int, required=True)
-        parser.add_argument('category_name', type=str, required=True)
-        parser.add_argument('description', type=str, required=True)
-        args = parser.parse_args()
-        category_id = args['category_id']
-        category_name = args['category_name']
-        description = args['description']
-        request_by = current_user.id
-        
-        category = Category.query.filter_by(category_id=category_id).first()
-        if not category:
-          raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
-        category_request = CategoryRequest(category_name=category_name, description=description, type="UPDATE", request_status="PENDING", request_by=request_by)
-        db.session.add(category_request)
-        db.session.commit()
-        return {"message": "Category request created successfully!"}, 200
-      except BusinessValidationError as e:
-        raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
-      except Exception as e:
-        raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
-      
-
-class DeleteCategoryRequestByManagerAPI(Resource):
-    
-      @level_required(2)
-      def post(current_user, self):
-        try:
-          parser = reqparse.RequestParser()
-          parser.add_argument('category_id', type=int, required=True)
-          args = parser.parse_args()
-          category_id = args['category_id']
-          request_by = current_user.id
-          
-          category = Category.query.filter_by(category_id=category_id).first()
-          if not category:
-            raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
-          category_request = CategoryRequest(category_name=category.category_name, description=category.description, type="DELETE", request_status="PENDING", request_by=request_by)
-          db.session.add(category_request)
-          db.session.commit()
-          return {"message": "Category request created successfully!"}, 200
-        except BusinessValidationError as e:
-          raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
-        except Exception as e:
-          raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))

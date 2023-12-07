@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar navbar-expand-lg navbar-light">
     <router-link to="/" class="navbar-brand">Grocery Store</router-link>
     <button
       class="navbar-toggler"
@@ -40,4 +40,16 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.navbar {
+  width: 100%;
+  margin: 0%;
+  padding: auto;
+  margin-bottom: 20px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.navbar {
+  background-color: #50e0b0;
+}
+</style>

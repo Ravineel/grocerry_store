@@ -21,7 +21,4 @@ export default {
   getters,
   actions,
   mutations,
-  modules: {
-    nested,
-  },
 };

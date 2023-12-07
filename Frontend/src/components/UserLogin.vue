@@ -9,12 +9,12 @@
           <div class="card-body">
             <form @submit.prevent="login">
               <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
+                <label for="username" class="form-label">Email</label>
                 <input
                   type="text"
-                  v-model="username"
+                  v-model="email"
                   class="form-control"
-                  id="username"
+                  id="email"
                   required
                 />
               </div>
@@ -44,13 +44,31 @@ export default {
   name: "LoginForm",
   data() {
     return {
-      username: "",
+      email: "",
       password: "",
     };
   },
   methods: {
     login() {
-      // Your login logic
+      try {
+        this.$store
+          .dispatch("user/login", {
+            email: this.email,
+            password: this.password,
+          })
+          .then((res) => {
+            print(this.$store.getters);
+            if (this.$store.getters.isAuthenticated) {
+              // Redirect or perform other actions after successful login
+              console.log("Login successful!");
+            } else {
+              // Show an error message to the user
+              console.log("Login failed. Check credentials.");
+            }
+          });
+      } catch (err) {
+        console.log(err);
+      }
     },
   },
 };

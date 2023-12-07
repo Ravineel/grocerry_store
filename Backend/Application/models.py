@@ -17,7 +17,7 @@ class User(db.Model,UserMixin):
     role=db.Column(db.Integer, nullable=False)
     is_manager_active = db.Column(db.Boolean, default=False)
     account_created_at = db.Column(db.String, nullable=False)
-    jwt_token = db.Column(db.String, nullable=True)
+    jwt_token = db.Column(db.String(255), nullable=True)
     orders = db.relationship('Order', backref='user', lazy=True, cascade='all, delete-orphan')
 
     

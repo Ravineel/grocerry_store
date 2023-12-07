@@ -51,7 +51,7 @@ app, api, celery = create_app()
 
 from Application.APIs.User.LoginLogoutSignUp import Login, Logout, SignUp
 from Application.APIs.Category.Category import CategoryGeneralAPI, CategoryAdminAPI, CategoryByIdAPI,CategoryRequestAPI
-from Application.APIs.Category.CategoryManager import CreateCategoryRequestByManagerAPI, UpdateCategoryRequestByManagerAPI, DeleteCategoryRequestByManagerAPI
+from Application.APIs.Category.CategoryManager import RequestCategoryRequestByManagerAPI
 from Application.APIs.Product.Product import ProductGeneralAPI, ProductByIdAPI, ProductManagerAPI
 
 # user apis
@@ -72,9 +72,7 @@ api.add_resource(CategoryRequestAPI, '/api/v1/category/request/get/all','/api/v1
 
 
 # category manager apis
-api.add_resource(CreateCategoryRequestByManagerAPI, '/api/v1/category/manager/create')
-api.add_resource(UpdateCategoryRequestByManagerAPI, '/api/v1/category/manager/update')
-api.add_resource(DeleteCategoryRequestByManagerAPI, '/api/v1/category/manager/delete')
+api.add_resource(RequestCategoryRequestByManagerAPI, '/api/v1/category/manager/request')
 
 # product apis
 api.add_resource(ProductGeneralAPI, '/api/v1/product/get/all')
