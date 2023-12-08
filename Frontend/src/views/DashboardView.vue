@@ -91,18 +91,13 @@
         </div>
       </div>
     </div>
-    <CartModal @close-cart-modal="showCartModal = false" />
   </div>
 </template>
 
 <script>
-import CartModal from "@/components/CartModal.vue";
-
 export default {
   name: "Home",
-  components: {
-    CartModal,
-  },
+
   data() {
     return {
       showCartModal: false,
@@ -183,9 +178,6 @@ export default {
     },
     saveCartToLocalStorage() {
       localStorage.setItem("cart", JSON.stringify(this.cart));
-    },
-    toggleCartModal() {
-      this.showCartModal = !this.showCartModal;
     },
   },
   created() {

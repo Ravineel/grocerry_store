@@ -13,8 +13,8 @@
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav mr-auto">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
           <li class="nav-item">
             <router-link to="/" class="nav-link">Home</router-link>
           </li>
@@ -29,27 +29,16 @@
             >
           </li>
           <li class="nav-item">
-            <button
-              type="button"
-              class="nav-link btn btn-link"
-              data-bs-toggle="modal"
-              data-bs-target="#cartModal"
-            >
+            <router-link to="/cart" class="nav-link">
               <v-icon name="hi-solid-shopping-cart" scale="1.3" />
-            </button>
+            </router-link>
           </li>
-          <li
-            class="nav-item"
-            v-if="
-              isAuthenticated &&
-              (userRole === 'admin' || userRole === 'manager')
-            "
-          >
+          <li class="nav-item" v-if="showManagerDashboardLink">
             <router-link to="/manager" class="nav-link"
               >Manager Dashboard</router-link
             >
           </li>
-          <li class="nav-item" v-if="isAuthenticated && userRole === 'admin'">
+          <li class="nav-item" v-if="showAdminDashboardLink">
             <router-link to="/Admin" class="nav-link"
               >Admin Dashbaord</router-link
             >
@@ -66,15 +55,26 @@ export default {
 
   data() {
     return {
-      isAuthenticated: false,
-      userRole: null,
       roles: ["guest", "user", "manager", "admin"],
     };
   },
-  created() {
-    this.isAuthenticated = sessionStorage.getItem("isAuthenticated");
-    const role = sessionStorage.getItem("userRole");
-    this.userRole = this.roles[sessionStorage.getItem("userRole")];
+  computed: {
+    isAuthenticated() {
+      return sessionStorage.getItem("isAuthenticated") === "true";
+    },
+    userRole() {
+      const role = sessionStorage.getItem("userRole");
+      return this.roles[role];
+    },
+    showManagerDashboardLink() {
+      return (
+        this.isAuthenticated &&
+        (this.userRole === "admin" || this.userRole === "manager")
+      );
+    },
+    showAdminDashboardLink() {
+      return this.isAuthenticated && this.userRole === "admin";
+    },
   },
 };
 </script>

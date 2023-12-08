@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/DashboardView.vue";
 import LoginView from "../views/LoginView.vue";
 import AdminView from "../views/AdminView.vue";
+import CartView from "../views/CartView.vue";
 
 import { useToast } from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-default.css";
@@ -21,6 +22,19 @@ const router = createRouter({
       component: LoginView,
     },
     {
+      path: "/logout",
+      name: "Logout",
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: "/cart",
+      name: "Cart",
+      component: CartView,
+    },
+
+    {
       path: "/admin",
       name: "Admin",
       component: AdminView,
@@ -38,10 +52,6 @@ const router = createRouter({
         requiresRole: ["manager", "admin"],
       },
     },
-    {
-      path: "/logout",
-      name: "Logout",
-    },
   ],
 });
 
@@ -53,7 +63,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const $toast = useToast({ position: "top-right", duration: 3000 });
-  const publicPages = ["/login", "/"];
+  const publicPages = ["/login", "/", "/cart"];
   const authRequired = !publicPages.includes(to.path);
   const loggedInUserRole = sessionStorage.getItem("userRole");
   const role = ["guest", "user", "manager", "admin"];
@@ -68,10 +78,9 @@ router.beforeEach((to, from, next) => {
   else if (
     isAuthorized &&
     authRequired &&
+    to.meta.requiresRole &&
     !to.meta.requiresRole.includes(role[loggedInUserRole])
   ) {
-    console.log(to.meta.requiresRole);
-    console.log(role[loggedInUserRole]);
     next(false);
     $toast.error("You don't have permission to access this page!");
   }
@@ -80,9 +89,13 @@ router.beforeEach((to, from, next) => {
     next(false);
     $toast.info("You are already logged in!");
   }
-  //User clicks logout, redirect to login and clear session storage
+  // User clicks logout, clear session storage and redirect to login
   else if (to.name == "Logout") {
+    // Clear session storage
     sessionStorage.clear();
+    // Set isAuthenticated to false
+    sessionStorage.setItem("isAuthenticated", false);
+    // Redirect to the login page
     next({ name: "Login" });
     $toast.info("You have been logged out!");
   } else {

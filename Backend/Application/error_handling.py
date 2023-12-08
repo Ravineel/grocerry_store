@@ -20,7 +20,7 @@ class TokenInvalidError(CustomException):
 
 class InsufficientLevelError(CustomException):
   def __init__(self):
-    super().__init__(403, "INVALID_ROLE", "Insufficient privileges!")
+    super().__init__(401, "INVALID_ROLE", "Insufficient privileges!")
 
 class ValidationError(CustomException):
   def __init__(self, status_code, error_code, error_message):

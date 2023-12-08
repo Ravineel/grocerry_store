@@ -53,7 +53,7 @@ from Application.APIs.User.LoginLogoutSignUp import Login, Logout, SignUp
 from Application.APIs.Category.Category import CategoryGeneralAPI, CategoryAdminAPI, CategoryByIdAPI,CategoryRequestAPI
 from Application.APIs.Category.CategoryManager import RequestCategoryRequestByManagerAPI
 from Application.APIs.Product.Product import ProductGeneralAPI, ProductByIdAPI, ProductManagerAPI
-
+from Application.APIs.Order.Order import CheckoutApi
 # user apis
 api.add_resource(Login, '/api/v1/user/login')
 api.add_resource(Logout, '/api/v1/user/logout')
@@ -84,6 +84,8 @@ api.add_resource(ProductManagerAPI, '/api/v1/product/create','/api/v1/product/ma
 # product by id apis
 api.add_resource(ProductByIdAPI, '/api/v1/product/get/<int:product_id>')
 
+#checkout api
+api.add_resource(CheckoutApi, '/api/v1/order/checkout')
 
 
 if __name__ == "__main__":

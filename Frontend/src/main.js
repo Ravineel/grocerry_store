@@ -5,12 +5,6 @@ import store from "./store";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.bundle.js";
-
-import "bootstrap-vue/dist/bootstrap-vue.css";
-
-import "bootstrap";
-import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
-
 import ToastPlugin from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-default.css";
 
@@ -21,8 +15,6 @@ addIcons(HiSolidShoppingCart);
 
 const app = createApp(App);
 app.component("v-icon", OhVueIcon);
-app.use(BootstrapVue);
-app.use(IconsPlugin);
 
 app.use(ToastPlugin, {
   position: "top-right",

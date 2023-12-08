@@ -1,9 +1,8 @@
 from flask import current_app as app, jsonify, make_response
 from flask_restful import Resource, reqparse, marshal_with, fields
-from werkzeug.security import check_password_hash
-from Application.models import User, Category, CategoryRequest, Product
+from Application.models import Category, Product
 from Application.db import db
-from Application.error_handling import BusinessValidationError, TokenExpiredError, TokenInvalidError, InsufficientLevelError
+from Application.error_handling import BusinessValidationError
 from Application.middleware import level_required
 from datetime import datetime
 
@@ -56,7 +55,7 @@ class ProductByIdAPI(Resource):
           raise BusinessValidationError(404, "PRODUCT_NOT_FOUND", "Product with id {} not found".format(product_id))
         return product, 200
       except BusinessValidationError as e:
-        raise e
+        raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
       except Exception as e:
         raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
       
@@ -100,7 +99,7 @@ class ProductManagerAPI(Resource): #create, update, delete product
       return make_response(jsonify({"success":True, "message":"Product created sucessfully"}), 200)
     
     except BusinessValidationError as e:
-      raise e
+      raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
   
@@ -137,7 +136,7 @@ class ProductManagerAPI(Resource): #create, update, delete product
       db.session.commit()
       return make_response(jsonify({"success":True, "message":"Product Updated sucessfully"}), 200)
     except BusinessValidationError as e:
-      raise e
+      raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
   
@@ -155,7 +154,7 @@ class ProductManagerAPI(Resource): #create, update, delete product
       db.session.commit()
       return make_response(jsonify({"success":True, "message":"Product deleted sucessfully"}), 200)
     except BusinessValidationError as e:
-      raise e
+      raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
     

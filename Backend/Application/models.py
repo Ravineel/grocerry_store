@@ -71,7 +71,7 @@ class Product(db.Model):
 class Order(db.Model):
   __tablename__ = 'order'
   id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-  order_id = db.Column(db.Integer, nullable=False)
+  order_id = db.Column(db.String, nullable=False)
   order_date = db.Column(db.DateTime, nullable=False)
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
   product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'))
