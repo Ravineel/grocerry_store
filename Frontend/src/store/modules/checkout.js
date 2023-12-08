@@ -4,6 +4,10 @@
 const state = () => ({
   items: [],
   checkoutStatus: null,
+
+  isLoading: false,
+  created: false,
+  error: null,
 });
 
 // getters

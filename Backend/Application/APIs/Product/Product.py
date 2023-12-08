@@ -1,12 +1,12 @@
 from flask import current_app as app, jsonify, make_response
-from flask_restful import Resource, reqparse,marshal_with, fields
+from flask_restful import Resource, reqparse, marshal_with, fields
 from werkzeug.security import check_password_hash
 from Application.models import User, Category, CategoryRequest, Product
 from Application.db import db
 from Application.error_handling import BusinessValidationError, TokenExpiredError, TokenInvalidError, InsufficientLevelError
 from Application.middleware import level_required
-from datetime import datetime, timedelta
-import jwt
+from datetime import datetime
+
 
 
 Product_fields = {
@@ -15,6 +15,7 @@ Product_fields = {
   'description': fields.String,
   'create_date': fields.DateTime,
   'category_id': fields.Integer,
+  'category_name': fields.String,
   'qty': fields.Integer,
   'rate': fields.Float,
   'unit': fields.String,
@@ -28,10 +29,21 @@ class ProductGeneralAPI(Resource):
   @marshal_with(Product_fields)  
   def get(self):
     try:
-      products = Product.query.all()
+      # Join with category table to get category name
+      # Order by quantity in descending order
+      products = Product.query.join(Category, Product.category_id == Category.category_id)\
+        .add_columns(
+          Product.product_id, Product.product_name, Product.description, 
+          Product.create_date, Product.category_id, Category.category_name, 
+          Product.qty, Product.rate, Product.unit, Product.active, 
+          Product.manufacturer, Product.mfg_date)\
+        .order_by(Product.qty.desc())\
+        .all()
+
       return products, 200
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
+
     
 
 class ProductByIdAPI(Resource):
@@ -66,6 +78,9 @@ class ProductManagerAPI(Resource): #create, update, delete product
       args = parser.parse_args()
       
       create_by = current_user.id
+      #convert string to date only
+      mfg_date = datetime.strptime(args['mfg_date'], '%d-%m-%Y')
+      
       
       product = Product(
         product_name=args['product_name'],
@@ -75,14 +90,15 @@ class ProductManagerAPI(Resource): #create, update, delete product
         rate=args['rate'],
         unit=args['unit'],
         manufacturer=args['manufacturer'],
-        mfg_date=datetime.strptime(args['mfg_date'], '%d-%m-%Y'),
+        mfg_date=mfg_date,
         create_by=create_by,
-        last_update_by=create_by
+
         
       )
       db.session.add(product)
       db.session.commit()
-      return product, 200
+      return make_response(jsonify({"success":True, "message":"Product created sucessfully"}), 200)
+    
     except BusinessValidationError as e:
       raise e
     except Exception as e:
@@ -119,7 +135,7 @@ class ProductManagerAPI(Resource): #create, update, delete product
       product.last_update_by = current_user.id
       product.active = args['active']
       db.session.commit()
-      return product, 200
+      return make_response(jsonify({"success":True, "message":"Product Updated sucessfully"}), 200)
     except BusinessValidationError as e:
       raise e
     except Exception as e:
@@ -137,7 +153,7 @@ class ProductManagerAPI(Resource): #create, update, delete product
         raise BusinessValidationError(404, "PRODUCT_NOT_FOUND", "Product with id {} not found".format(args['product_id']))
       db.session.delete(product)
       db.session.commit()
-      return {}, 200
+      return make_response(jsonify({"success":True, "message":"Product deleted sucessfully"}), 200)
     except BusinessValidationError as e:
       raise e
     except Exception as e:

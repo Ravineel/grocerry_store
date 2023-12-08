@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row justify-content-center mt-5">
       <div class="col-md-6">
         <div class="card">
@@ -56,13 +56,14 @@ export default {
             email: this.email,
             password: this.password,
           })
-          .then((res) => {
-            print(this.$store.getters);
-            if (this.$store.getters.isAuthenticated) {
-              // Redirect or perform other actions after successful login
-              console.log("Login successful!");
+          .then(() => {
+            if (this.$store.getters["user/isAuthenticated"]) {
+              // Redirect to Home view or any other route
+              this.$router.push({ name: "Home" });
+              this.$toast.success("Login successful!");
             } else {
-              // Show an error message to the user
+              // Handle unsuccessful login, e.g., show an error message
+              this.$toast.error("Login failed. Check credentials!");
               console.log("Login failed. Check credentials.");
             }
           });

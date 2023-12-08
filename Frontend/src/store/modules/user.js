@@ -32,22 +32,24 @@ const actions = {
         },
         body: JSON.stringify(payload),
       });
-      const data = await response.json();
 
-      console.log(data);
+      console.log(response);
+      const data = await response.json();
 
       if (data.success) {
         commit("setToken", data.token);
         commit("setUser", data.user);
         commit("setIsAuthenticated", true);
         commit("setLoading", false);
-        sessionStorage.setItem("token", data.token);
-        sessionStorage.setItem("User Name", data.user.user_name);
-        sessionStorage.setItem("role", data.user.role);
+        sessionStorage.setItem("userToken", data.token);
+        sessionStorage.setItem("UserName", data.user.user_name);
+        sessionStorage.setItem("userRole", data.user.role);
+        sessionStorage.setItem("isAuthenticated", true);
       } else {
-        commit("setErrors", data.errors);
+        sessionStorage.setItem("isAuthenticated", false);
+        commit("setErrors", data.error_message);
         commit("setLoading", false);
-        console.log(data.errors);
+        console.log(data.error_message);
       }
     } catch (err) {
       console.log("An error occured: ", err);
