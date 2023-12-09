@@ -47,9 +47,85 @@ const actions = {
     }
   },
 
-  async getProductById({ commit }, payload) {},
-  async createProduct({ commit }, payload) {},
+  async getProductById({ commit }, payload) {
+    commit("setLoading", true);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/product/get/${payload}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const status = response.status;
+      const data = await response.json();
+
+      if (status === 200) {
+        commit("setProducts", data);
+        commit("setLoading", false);
+        return data;
+      } else {
+        commit("setLoading", false);
+        commit("setError", data.error_message);
+      }
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setError", err);
+      commit("setLoading", false);
+    }
+  },
+  async createProduct({ commit }, payload) {
+    commit("setLoading", true);
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/product/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      const status = response.status;
+      const data = await response.json();
+
+      if (status === 201) {
+        commit("setCreated", true);
+        commit("setLoading", false);
+        return data;
+      } else if (status === 401) {
+        sessionStorage.removeItem("userToken");
+        sessionStorage.setItem("isAuthenticated", false);
+        commit("setLoading", false);
+        commit("setCreated", false);
+
+        if (responseData.error_code === "TOKEN_EXPIRED") {
+          commit("setError", "Your session has expired. Please login again.");
+        }
+        if (responseData.error_code === "TOKEN_INVALID") {
+          commit("setError", "Your session is invalid. Please login again.");
+        }
+        if (responseData.error_code === "INVALID_ROLE") {
+          commit("setError", "You are not authorized to perform this action.");
+        }
+        console.log("An error occured: ", responseData.error_message);
+      } else {
+        commit("setLoading", false);
+        commit("setError", data.error_message);
+      }
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setError", err);
+      commit("setLoading", false);
+    }
+  },
+
   async updateProduct({ commit }, payload) {},
+
   async deleteProduct({ commit }, payload) {},
 };
 

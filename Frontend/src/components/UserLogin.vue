@@ -63,8 +63,7 @@ export default {
               this.$toast.success("Login successful!");
             } else {
               // Handle unsuccessful login, e.g., show an error message
-              this.$toast.error("Login failed. Check credentials!");
-              console.log("Login failed. Check credentials.");
+              this.$toast.error(this.$store.getters["user/getErrors"]);
             }
           });
       } catch (err) {

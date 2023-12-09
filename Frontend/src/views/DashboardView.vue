@@ -181,7 +181,13 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch("products/getAllProducts");
+    this.$store.dispatch("products/getAllProducts").then(() => {
+      if (this.$store.getters["products/products"].length === 0) {
+        this.$toast.error("Failed to fetch products!");
+      } else {
+        this.$toast.success("Products fetched successfully!");
+      }
+    });
     this.loadCartFromLocalStorage();
   },
 };

@@ -3,7 +3,7 @@ import HomeView from "../views/DashboardView.vue";
 import LoginView from "../views/LoginView.vue";
 import AdminView from "../views/AdminView.vue";
 import CartView from "../views/CartView.vue";
-
+import ManagerView from "../views/ManagerView.vue";
 import { useToast } from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-default.css";
 
@@ -46,7 +46,7 @@ const router = createRouter({
     {
       path: "/manager",
       name: "Manager",
-      component: AdminView,
+      component: ManagerView,
       meta: {
         requiresAuth: true,
         requiresRole: ["manager", "admin"],

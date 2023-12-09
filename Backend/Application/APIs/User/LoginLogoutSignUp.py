@@ -22,12 +22,18 @@ class Login(Resource):
        
 
       user = User.query.filter_by(email=args['email']).first()
-
+      user_role = user.role
+      
       if not user:
         raise BusinessValidationError(404, "USER_NOT_FOUND", "User not found")      
 
       if not check_password_hash(user.password_hash, args['password']):
         raise BusinessValidationError(403, "INVALID_PASSWORD_USERNAME", "Invalid password or USERNAME")
+
+      if user_role == 2:
+        if not user.is_manager_active:
+          raise BusinessValidationError(403, "MANAGER_NOT_ACTIVE", "Manager is not active")
+
 
       # Generate JWT token with user information
       token = jwt.encode({
@@ -69,6 +75,7 @@ class Logout(Resource):
     try:
       args = logout_parser.parse_args()
       user = User.query.filter_by(id=args['user_id']).first()
+      
       
       if user:
         # Access current_user here
