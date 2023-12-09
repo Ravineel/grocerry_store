@@ -182,8 +182,10 @@ export default {
   },
   created() {
     this.$store.dispatch("products/getAllProducts").then(() => {
-      if (this.$store.getters["products/products"].length === 0) {
-        this.$toast.error("Failed to fetch products!");
+      if (this.$store.getters["products/error"]) {
+        this.$toast.error(this.$store.getters["products/error"]);
+      } else if (this.$store.getters["products/products"].length === 0) {
+        this.$toast.warning("No products found!");
       } else {
         this.$toast.success("Products fetched successfully!");
       }

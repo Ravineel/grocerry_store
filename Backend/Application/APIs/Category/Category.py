@@ -184,7 +184,7 @@ class CategoryRequestAPI(Resource):
           db.session.commit()
         
         elif category_request.type == "UPDATE":
-          category = Category.query.filter_by(category_name=category_request.category_name).first()
+          category = Category.query.filter_by(category_id=category_request.category_id).first()
           if not category:
             raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
           category.category_name = category_request.category_name
@@ -194,7 +194,7 @@ class CategoryRequestAPI(Resource):
           db.session.commit() 
           
         elif category_request.type == "DELETE":
-          category = Category.query.filter_by(category_name=category_request.category_name).first()
+          category = Category.query.filter_by(category_id=category_request.category_id).first()
           if not category:
             raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
           db.session.delete(category)

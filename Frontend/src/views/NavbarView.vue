@@ -82,7 +82,9 @@ export default {
     },
   },
   created() {
+    console.log(sessionStorage.getItem("isAuthenticated"));
     this.isAuthenticated = sessionStorage.getItem("isAuthenticated");
+    console.log(this.isAuthenticated);
     const role = sessionStorage.getItem("userRole")
       ? sessionStorage.getItem("userRole")
       : 0;

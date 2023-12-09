@@ -63,7 +63,7 @@ class Product(db.Model):
   create_date = db.Column(db.DateTime, server_default=db.func.now())
   last_update_date = db.Column(db.DateTime, server_default=db.func.now())
   create_by = db.Column(db.Integer, db.ForeignKey('user.id'))
-  
+  last_update_by = db.Column(db.Integer, db.ForeignKey('user.id'))
   product_orders = db.relationship('Order', backref='product', lazy=True, cascade='all, delete-orphan')
   
 
@@ -86,6 +86,7 @@ class Order(db.Model):
 class CategoryRequest(db.Model):
   __tablename__ = 'category_request'
   id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+  category_id = db.Column(db.Integer, db.ForeignKey('category.category_id'), nullable=True)
   category_name = db.Column(db.String(50), nullable=False)
   description = db.Column(db.String(50))
   create_date = db.Column(db.DateTime, server_default=db.func.now())
@@ -94,5 +95,5 @@ class CategoryRequest(db.Model):
   request_by = db.Column(db.Integer, db.ForeignKey('user.id'))
   last_update_date = db.Column(db.DateTime, server_default=db.func.now())
   approved_by = db.Column(db.Integer, db.ForeignKey('user.id'))
-  approved_date = db.Column(db.DateTime, server_default=db.func.now())
+  approved_date = db.Column(db.DateTime, nullable=True)
   

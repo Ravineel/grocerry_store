@@ -72,7 +72,7 @@ api.add_resource(CategoryRequestAPI, '/api/v1/category/request/get/all','/api/v1
 
 
 # category manager apis
-api.add_resource(RequestCategoryRequestByManagerAPI, '/api/v1/category/manager/request')
+api.add_resource(RequestCategoryRequestByManagerAPI, '/api/v1/category/manager/request/create','/api/v1/category/manager/request/get')
 
 # product apis
 api.add_resource(ProductGeneralAPI, '/api/v1/product/get/all')

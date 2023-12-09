@@ -7,7 +7,9 @@
             <div class="card-title text-center">
               <h4>Your Requests</h4>
             </div>
-            <!-- Add content for Your Requests if needed -->
+            <div class="card-text">
+              <ManagerRequestTable />
+            </div>
           </div>
         </div>
       </div>
@@ -34,7 +36,14 @@
             <div class="card-title text-center">
               <h4>Category Table</h4>
             </div>
-            <!-- Add content for Category Table if needed -->
+            <div class="card-text mb-2">
+              <button class="btn btn-primary" @click="onClickCreateCategory">
+                Create Request for Category
+              </button>
+            </div>
+            <div class="card-text">
+              <ManagerCategoryTable />
+            </div>
           </div>
         </div>
       </div>
@@ -44,15 +53,22 @@
 
 <script>
 import ManagerProductTable from "@/components/ManagerProductTable.vue";
+import ManagerCategoryTable from "@/components/ManagerCategoryTable.vue";
+import ManagerRequestTable from "@/components/ManagerRequestTable.vue";
 
 export default {
   name: "ManagerView",
   components: {
     ManagerProductTable,
+    ManagerCategoryTable,
+    ManagerRequestTable,
   },
   methods: {
     onClickCreateProduct() {
       this.$router.push("/product/create");
+    },
+    onClickCreateCategory() {
+      this.$router.push("/category/create");
     },
   },
 };

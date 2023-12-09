@@ -17,7 +17,7 @@ with app.app_context():
     
     print("Adding Admin User...")
     admin_user = User(
-        username='admin',
+      
         password='admin_password',  # Make sure to hash the password in a real-world scenario
         email='admin@example.com',
         first_name='Admin',
@@ -29,7 +29,7 @@ with app.app_context():
     print("Adding Manger user.")
     
     manager_user1 = User(
-        username='manager1',
+        
         password='manager1_password',
         email='mager1@gmail.com',
         first_name='Manager',
@@ -43,7 +43,7 @@ with app.app_context():
     print("Adding Normal Users...")
 
     normal_user1 = User(
-        username='user1',
+   
         password='user1_password',
         email='user1@example.com',
         first_name='User',
@@ -54,7 +54,7 @@ with app.app_context():
     )
 
     normal_user2 = User(
-        username='user2',
+        
         password='user2_password',
         email='user2@example.com',
         first_name='User',
@@ -66,7 +66,7 @@ with app.app_context():
     
     print("Adding Guest Users...")
     guest_user1 = User(
-        username='user3',
+        
         password='user3_password',
         email='user3@example.com',
         first_name='User',
