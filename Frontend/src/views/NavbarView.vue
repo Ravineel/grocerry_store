@@ -55,17 +55,12 @@ export default {
 
   data() {
     return {
+      isAuthenticated: false,
+      userRole: null,
       roles: ["guest", "user", "manager", "admin"],
     };
   },
   computed: {
-    isAuthenticated() {
-      return sessionStorage.getItem("isAuthenticated") === "true";
-    },
-    userRole() {
-      const role = sessionStorage.getItem("userRole");
-      return this.roles[role];
-    },
     showManagerDashboardLink() {
       return (
         this.isAuthenticated &&
@@ -75,6 +70,23 @@ export default {
     showAdminDashboardLink() {
       return this.isAuthenticated && this.userRole === "admin";
     },
+  },
+  watch: {
+    isAuthenticated(newVal) {
+      // Handle changes in isAuthenticated
+      console.log("isAuthenticated changed:", newVal);
+    },
+    userRole(newVal) {
+      // Handle changes in userRole
+      console.log("userRole changed:", newVal);
+    },
+  },
+  created() {
+    this.isAuthenticated = sessionStorage.getItem("isAuthenticated");
+    const role = sessionStorage.getItem("userRole")
+      ? sessionStorage.getItem("userRole")
+      : 0;
+    this.userRole = this.roles[role];
   },
 };
 </script>

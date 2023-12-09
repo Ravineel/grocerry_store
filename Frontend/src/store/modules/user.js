@@ -6,6 +6,9 @@ const state = () => ({
   errors: [],
   loading: false,
   created: false,
+  role: "guest",
+
+  SignedUp: false,
 });
 
 // getters
@@ -16,11 +19,14 @@ const getters = {
   getErrors: (state) => state.errors,
   isloading: (state) => state.loading,
   isCreated: (state) => state.created,
+  role: (state) => state.role,
+  SignedUp: (state) => state.SignedUp,
 };
 
 // actions using fetch()
 const actions = {
   async login({ commit }, payload) {
+    const roles = ["guest", "user", "manager", "admin"];
     commit("setErrors", []);
     commit("setLoading", true);
 
@@ -33,7 +39,6 @@ const actions = {
         body: JSON.stringify(payload),
       });
 
-      console.log(response);
       const data = await response.json();
 
       if (data.success) {
@@ -41,6 +46,9 @@ const actions = {
         commit("setUser", data.user);
         commit("setIsAuthenticated", true);
         commit("setLoading", false);
+
+        commit("setRole", roles[data.user.role]);
+
         sessionStorage.setItem("userToken", data.token);
         sessionStorage.setItem("UserName", data.user.user_name);
         sessionStorage.setItem("userRole", data.user.role);
@@ -55,6 +63,40 @@ const actions = {
       console.log("An error occured: ", err);
       commit("setErrors", err);
       commit("setLoading", false);
+    }
+  },
+
+  async signup({ commit }, payload) {
+    commit("setErrors", []);
+    commit("setLoading", true);
+
+    console.log(payload);
+    try {
+      const response = await fetch("http://localhost:5000/api/v1/user/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        commit("setLoading", false);
+        commit("setCreated", true);
+        commit("setSignedUp", true);
+      } else {
+        commit("setErrors", data.error_message);
+        commit("setLoading", false);
+        commit("setCreated", false);
+        console.log(data.error_message);
+      }
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setErrors", err);
+      commit("setLoading", false);
+      commit("setCreated", false);
     }
   },
 };
@@ -78,6 +120,12 @@ const mutations = {
   },
   setCreated(state, created) {
     state.created = created;
+  },
+  setRole(state, role) {
+    state.role = role;
+  },
+  setSignedUp(state, SignedUp) {
+    state.SignedUp = SignedUp;
   },
 };
 

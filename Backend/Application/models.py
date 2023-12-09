@@ -9,7 +9,6 @@ from flask import current_app as app
 class User(db.Model,UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, autoincrement=True,primary_key=True)
-    username = db.Column(db.String, unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
     first_name = db.Column(db.String, nullable=False)

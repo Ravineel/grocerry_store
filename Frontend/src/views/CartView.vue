@@ -91,6 +91,7 @@ export default {
             this.$router.push({ name: "Home" });
             this.$toast.success("Order placed successfully! ");
           } else {
+            this.$router.push({ name: "Logout" });
             this.$toast.warning(this.$store.getters["checkout/error"]);
             this.$toast.error("Order failed! ");
           }

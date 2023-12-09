@@ -89,7 +89,6 @@ class Logout(Resource):
 
 
 SingUp_parser = reqparse.RequestParser()
-SingUp_parser.add_argument("username", type=str, required=True, help="Username is required")
 SingUp_parser.add_argument("email", type=str, required=True, help="Email is required")
 SingUp_parser.add_argument("password", type=str, required=True, help="Password is required") 
 SingUp_parser.add_argument("first_name", type=str, required=True, help="First Name is required")
@@ -103,7 +102,7 @@ class SignUp(Resource):
       args = SingUp_parser.parse_args()
       print(args)
       
-      if not args['username'] or not args['email'] or not args['password'] or not args['first_name'] or not args['role']:
+      if not args['email'] or not args['password'] or not args['first_name'] or not args['role']:
         raise BusinessValidationError(400, "MISSING_REQUIRED_PARAMETERS", "Username, email, password, first_name and role are required")
       
       user = User.query.filter_by(email=args['email']).first()
@@ -118,7 +117,6 @@ class SignUp(Resource):
         role = 1
       
       new_user = User(
-        username=args['username'],
         email=args['email'],
         password=args['password'],
         first_name=args['first_name'],
