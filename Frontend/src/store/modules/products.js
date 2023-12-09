@@ -61,6 +61,7 @@ const actions = {
       );
       const status = response.status;
       const data = await response.json();
+      console.log(data);
 
       if (status === 200) {
         commit("setProducts", data);
@@ -78,7 +79,10 @@ const actions = {
   },
   async createProduct({ commit }, payload) {
     commit("setLoading", true);
+    commit("setError", null);
+    commit("setCreated", false);
     try {
+      console.log("payload: ", payload);
       const response = await fetch(
         "http://localhost:5000/api/v1/product/create",
         {
@@ -90,6 +94,7 @@ const actions = {
           body: JSON.stringify(payload),
         }
       );
+
       const status = response.status;
       const data = await response.json();
 
@@ -103,16 +108,17 @@ const actions = {
         commit("setLoading", false);
         commit("setCreated", false);
 
-        if (responseData.error_code === "TOKEN_EXPIRED") {
+        if (data.error_code === "TOKEN_EXPIRED") {
           commit("setError", "Your session has expired. Please login again.");
         }
-        if (responseData.error_code === "TOKEN_INVALID") {
+        if (data.error_code === "TOKEN_INVALID") {
           commit("setError", "Your session is invalid. Please login again.");
         }
-        if (responseData.error_code === "INVALID_ROLE") {
+        if (data.error_code === "INVALID_ROLE") {
           commit("setError", "You are not authorized to perform this action.");
         }
-        console.log("An error occured: ", responseData.error_message);
+        console.log("An error occured: ", data.error_message);
+        return data;
       } else {
         commit("setLoading", false);
         commit("setError", data.error_message);
@@ -124,9 +130,105 @@ const actions = {
     }
   },
 
-  async updateProduct({ commit }, payload) {},
+  async updateProduct({ commit }, payload) {
+    commit("setLoading", true);
+    commit("setError", null);
+    commit("setCreated", false);
+    try {
+      console.log("payload: ", payload);
+      const response = await fetch(
+        "http://localhost:5000/api/v1/product/update",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
-  async deleteProduct({ commit }, payload) {},
+      const status = response.status;
+      const data = await response.json();
+
+      console.log(data);
+      if (status === 200) {
+        commit("setCreated", true);
+        commit("setLoading", false);
+        return data;
+      } else if (status === 401) {
+        sessionStorage.removeItem("userToken");
+        sessionStorage.setItem("isAuthenticated", false);
+        commit("setLoading", false);
+        commit("setCreated", false);
+
+        if (data.error_code === "TOKEN_EXPIRED") {
+          commit("setError", "Your session has expired. Please login again.");
+        }
+        if (data.error_code === "TOKEN_INVALID") {
+          commit("setError", "Your session is invalid. Please login again.");
+        }
+        if (data.error_code === "INVALID_ROLE") {
+          commit("setError", "You are not authorized to perform this action.");
+        }
+        console.log("An error occured: ", data.error_message);
+        return data;
+      } else {
+        commit("setLoading", false);
+        commit("setError", data.error_message);
+      }
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setError", err);
+      commit("setLoading", false);
+    }
+  },
+
+  async deleteProduct({ commit }, payload) {
+    commit("setLoading", true);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/product/delete`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      const status = response.status;
+      const data = await response.json();
+
+      if (status === 200) {
+        commit("setLoading", false);
+        return data;
+      } else if (status === 401) {
+        sessionStorage.removeItem("userToken");
+        sessionStorage.setItem("isAuthenticated", false);
+        commit("setLoading", false);
+
+        if (data.error_code === "TOKEN_EXPIRED") {
+          commit("setError", "Your session has expired. Please login again.");
+        }
+        if (data.error_code === "TOKEN_INVALID") {
+          commit("setError", "Your session is invalid. Please login again.");
+        }
+        if (data.error_code === "INVALID_ROLE") {
+          commit("setError", "You are not authorized to perform this action.");
+        }
+        console.log("An error occured: ", data.error_message);
+      } else {
+        commit("setLoading", false);
+        commit("setError", data.error_message);
+      }
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setError", err);
+      commit("setLoading", false);
+    }
+  },
 };
 
 // mutations

@@ -1,14 +1,24 @@
 <template>
   <div class="container-fluid p-5">
-    <div class="row d-flex justify-content-center">
-      <div class="col-12 mt-2">
+    <div class="row justify-content-center">
+      <div class="col-12 mt-3">
         <div class="card">
           <div class="card-body">
-            <div class="card-body">
-              <h4 class="card-title text-center">Products Table</h4>
+            <div class="card-title text-center">
+              <h4>Your Requests</h4>
             </div>
-            <div class="card-text m-1">
-              <button class="btn btn-outline-primary" @click="onClickCreate">
+            <!-- Add content for Your Requests if needed -->
+          </div>
+        </div>
+      </div>
+      <div class="col-12 mt-3">
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title text-center">
+              <h4>Products Table</h4>
+            </div>
+            <div class="card-text mb-2">
+              <button class="btn btn-primary" @click="onClickCreateProduct">
                 Create Product
               </button>
             </div>
@@ -18,21 +28,13 @@
           </div>
         </div>
       </div>
-      <div class="col-12 mt-2">
+      <div class="col-12 mt-3">
         <div class="card">
           <div class="card-body">
-            <div class="card-body">
-              <h4 class="card-title text-center">Category Table</h4>
+            <div class="card-title text-center">
+              <h4>Category Table</h4>
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 mt-2">
-        <div class="card">
-          <div class="card-body">
-            <div class="card-body">
-              <h4 class="card-title text-center">Your Requests</h4>
-            </div>
+            <!-- Add content for Category Table if needed -->
           </div>
         </div>
       </div>
@@ -42,18 +44,34 @@
 
 <script>
 import ManagerProductTable from "@/components/ManagerProductTable.vue";
+
 export default {
   name: "ManagerView",
   components: {
     ManagerProductTable,
   },
-  data() {
-    return {};
-  },
   methods: {
-    onClickCreate() {
-      this.$router.push("/manager/create");
+    onClickCreateProduct() {
+      this.$router.push("/product/create");
     },
   },
 };
 </script>
+
+<style scoped>
+.card {
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  color: #343a40;
+}
+
+.btn-outline-primary:hover {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+</style>

@@ -78,7 +78,7 @@ class ProductManagerAPI(Resource): #create, update, delete product
       
       create_by = current_user.id
       #convert string to date only
-      mfg_date = datetime.strptime(args['mfg_date'], '%d-%m-%Y')
+      mfg_date = datetime.strptime(args['mfg_date'], '%Y-%m-%d')
       
       
       product = Product(
@@ -116,7 +116,7 @@ class ProductManagerAPI(Resource): #create, update, delete product
       parser.add_argument('unit', type=str, required=True)
       parser.add_argument('manufacturer', type=str, required=True)
       parser.add_argument('mfg_date', type=str, required=True)
-      parser.add_argument('active', type=bool, required=True)
+      
       args = parser.parse_args()
       
       product = Product.query.filter_by(product_id=args['product_id']).first()
@@ -129,10 +129,10 @@ class ProductManagerAPI(Resource): #create, update, delete product
       product.rate = args['rate']
       product.unit = args['unit']
       product.manufacturer = args['manufacturer']
-      product.mfg_date = datetime.strptime(args['mfg_date'], '%d-%m-%Y')
+      product.mfg_date = datetime.strptime(args['mfg_date'], '%Y-%m-%d')
       product.last_update_date = datetime.now()
       product.last_update_by = current_user.id
-      product.active = args['active']
+
       db.session.commit()
       return make_response(jsonify({"success":True, "message":"Product Updated sucessfully"}), 200)
     except BusinessValidationError as e:

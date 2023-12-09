@@ -54,7 +54,7 @@
             <p class="card-text">{{ product.description }}</p>
             <p class="card-text">Category: {{ product.category_name }}</p>
             <p class="card-text">
-              Price per Unit: ₹{{ product.rate.toFixed(2) }}
+              Price per {{ product.unit }}: ₹{{ product.rate.toFixed(2) }}
             </p>
             <p class="card-text">
               Availability:

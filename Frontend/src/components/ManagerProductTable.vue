@@ -188,12 +188,18 @@ export default {
       this.selectedRow = selectedRows[0];
     },
     onEditClick(param) {
-      // Handle edit click here
-      console.log("Edit clicked for row with data table:", param);
+      this.$router.push({
+        name: "EditProduct",
+        params: { product_id: param.product_id },
+      });
     },
     onDeleteClick(param) {
-      // Handle delete click here
-      console.log("Delete clicked for row with data table:", param);
+      const payload = {
+        product_id: param.product_id,
+      };
+      this.$store.dispatch("products/deleteProduct", payload).then((data) => {
+        this.gridApi.applyTransaction({ remove: [param] });
+      });
     },
   },
 };

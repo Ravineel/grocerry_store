@@ -78,7 +78,7 @@ api.add_resource(RequestCategoryRequestByManagerAPI, '/api/v1/category/manager/r
 api.add_resource(ProductGeneralAPI, '/api/v1/product/get/all')
 
 # product manager apis
-api.add_resource(ProductManagerAPI, '/api/v1/product/create','/api/v1/product/manager/update','/api/v1/product/manager/delete')
+api.add_resource(ProductManagerAPI, '/api/v1/product/create','/api/v1/product/update','/api/v1/product/delete')
 
 
 # product by id apis
