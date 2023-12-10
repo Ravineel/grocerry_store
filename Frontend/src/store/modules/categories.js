@@ -55,7 +55,35 @@ const actions = {
     }
   },
 
-  async getCategoryById({ commit }, payload) {},
+  async getCategoryById({ commit }, payload) {
+    commit("setLoading", true);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/category/get/${payload}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const status = response.status;
+      const data = await response.json();
+
+      if (status === 200) {
+        commit("setCategories", data);
+        commit("setLoading", false);
+        return data;
+      } else {
+        commit("setLoading", false);
+        commit("setError", data.error_message);
+      }
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setError", err);
+      commit("setLoading", false);
+    }
+  },
 
   async createCategoryAdmin({ commit }, payload) {},
   async updateCategoryAdmin({ commit }, payload) {},
@@ -158,7 +186,51 @@ const actions = {
     }
   },
 
-  async getRequestCategoryAdmin({ commit }) {},
+  async getRequestCategoryAdmin({ commit }) {
+    commit("setLoading", true);
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/category/request/get/all",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+          },
+        }
+      );
+      const status = response.status;
+      const data = await response.json();
+      console.log(data);
+      if (status === 200) {
+        commit("setRequestCategories", data);
+        commit("setLoading", false);
+        return data;
+      } else if (status === 401) {
+        sessionStorage.removeItem("userToken");
+        sessionStorage.setItem("isAuthenticated", false);
+        commit("setLoading", false);
+
+        if (data.error_code === "TOKEN_EXPIRED") {
+          commit("setError", "Your session has expired. Please login again.");
+        }
+        if (data.error_code === "TOKEN_INVALID") {
+          commit("setError", "Your session is invalid. Please login again.");
+        }
+        if (data.error_code === "INVALID_ROLE") {
+          commit("setError", "You are not authorized to perform this action.");
+        }
+        return data;
+      } else {
+        commit("setLoading", false);
+        commit("setError", data.error_message);
+      }
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setError", err);
+      commit("setLoading", false);
+    }
+  },
 
   async approveRequestCategory({ commit }, payload) {},
 };

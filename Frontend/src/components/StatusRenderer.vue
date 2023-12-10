@@ -9,7 +9,7 @@ export default {
   name: "StatusRenderer",
   data() {
     return {
-      btnClass: "btn  m-1",
+      btnClass: "btn btn-sm m-1",
       value: "",
     };
   },

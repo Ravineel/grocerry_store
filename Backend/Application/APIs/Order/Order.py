@@ -7,18 +7,6 @@ from Application.middleware import level_required
 from datetime import datetime
 import uuid
 
-
-
-
-
-
-
-# Request Body: {'products': [
-  # {'product_id': 1, 'product_name': 'Dummy Product', 'category_name': 'Breads', 'category_id': 2, 'rate': 25.99, 'unit': 'pieces', 'quantity': 2, 'total': 51.98},
-  # {'product_id': 2, 'product_name': 'Dummy Product 2sda', 'category_name': 'Breads', 'category_id': 2, 'rate': 25.99, 'unit': 'pieces', 'quantity': 2, 'total': 51.98},
-  # {'product_id': 3, 'product_name': 'Dummy Product 3', 'category_name': 'Dairy', 'category_id': 1, 'rate': 5.99, 'unit': 'pieces', 'quantity': 1, 'total': 5.99}
-  # ]}
-
 class CheckoutApi(Resource):
   
   @level_required(1)
@@ -73,3 +61,5 @@ class CheckoutApi(Resource):
       raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
+    
+

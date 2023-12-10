@@ -7,7 +7,7 @@ import ManagerView from "../views/ManagerView.vue";
 import ProductCreateView from "../views/CreateProductView.vue";
 import ProductEditView from "../views/EditProductView.vue";
 import CategoryCreateView from "../views/CreateCategoryView.vue";
-
+import EditCategoryView from "../views/EditCategoryView.vue";
 import { useToast } from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-default.css";
 
@@ -78,6 +78,15 @@ const router = createRouter({
       path: "/category/create",
       name: "CreateCategory",
       component: CategoryCreateView,
+      meta: {
+        requiresAuth: true,
+        requiresRole: ["manager", "admin"],
+      },
+    },
+    {
+      path: "/category/edit/:category_id",
+      name: "EditCategory",
+      component: EditCategoryView,
       meta: {
         requiresAuth: true,
         requiresRole: ["manager", "admin"],

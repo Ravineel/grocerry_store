@@ -6,7 +6,7 @@ from Application.db import db
 from Application.error_handling import BusinessValidationError, TokenExpiredError, TokenInvalidError, InsufficientLevelError
 from Application.middleware import level_required
 from datetime import datetime, timedelta
-import jwt
+from sqlalchemy.orm import aliased
 
 
 
@@ -118,6 +118,7 @@ class CategoryAdminAPI(Resource):
 
 
 category_request_fields={
+  'id': fields.Integer,
   'category_id': fields.Integer,
   'category_name': fields.String,
   'description': fields.String,
@@ -129,7 +130,8 @@ category_request_fields={
   'approved_date': fields.DateTime,
   'last_update_by': fields.Integer,
   'last_update_date': fields.DateTime,
-  
+  'approved_by_name': fields.String,
+  'requested_by_name': fields.String,
 }
 
 class CategoryRequestAPI(Resource):
@@ -139,7 +141,27 @@ class CategoryRequestAPI(Resource):
   @marshal_with(category_request_fields)
   def get(current_user, self):
     try:
-      category_requests = CategoryRequest.query.all()
+      
+      user_approved_by = aliased(User)
+      user_requested_by = aliased(User)
+      
+      category_requests = CategoryRequest.query.outerjoin(user_approved_by, CategoryRequest.approved_by == user_approved_by.id) \
+      .outerjoin(user_requested_by, CategoryRequest.request_by == user_requested_by.id) \
+      .add_columns(
+          CategoryRequest.category_id, CategoryRequest.category_name, CategoryRequest.description, 
+          CategoryRequest.type, CategoryRequest.request_status, CategoryRequest.request_by, 
+          CategoryRequest.create_date, CategoryRequest.last_update_date, CategoryRequest.id, 
+          CategoryRequest.approved_by, CategoryRequest.approved_date, 
+          (user_approved_by.first_name + ' ' + user_approved_by.last_name).label('approved_by_name'),
+          (user_requested_by.first_name + ' ' + user_requested_by.last_name).label('requested_by_name')
+      ) \
+      .all()
+      
+      print(category_requests)
+        
+      
+      
+      
       return category_requests, 200
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))

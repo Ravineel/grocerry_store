@@ -4,8 +4,12 @@
       <div class="card">
         <div class="card-body">
           <div class="card-body">
-            <h4 class="card-title">Title</h4>
-            <h6 class="card-subtitle text-muted">Subtitle</h6>
+            <div class="card-title text-center">
+              <h1>Sales graph</h1>
+            </div>
+            <div class="chart-area">
+              <LineChart />
+            </div>
           </div>
         </div>
       </div>
@@ -15,8 +19,12 @@
         <div class="card">
           <div class="card-body">
             <div class="card-body">
-              <h4 class="card-title">Title</h4>
-              <h6 class="card-subtitle text-muted">Subtitle</h6>
+              <div class="card-title text-center">
+                <h1>User Counts</h1>
+              </div>
+              <div class="chart-area">
+                <BarChart />
+              </div>
             </div>
           </div>
         </div>
@@ -25,8 +33,12 @@
         <div class="card">
           <div class="card-body">
             <div class="card-body">
-              <h4 class="card-title">Title</h4>
-              <h6 class="card-subtitle text-muted">Subtitle</h6>
+              <div class="card-title text-center">
+                <h1>Store Managers</h1>
+              </div>
+              <div class="chart-area">
+                <BarChart />
+              </div>
             </div>
           </div>
         </div>
@@ -37,8 +49,19 @@
         <div class="card">
           <div class="card-body">
             <div class="card-body">
-              <h4 class="card-title">Title</h4>
-              <h6 class="card-subtitle text-muted">Subtitle</h6>
+              <div class="card-title text-center">
+                <h1>Requests</h1>
+              </div>
+              <div class="card-text">
+                <h4 class="text-center">
+                  Total Request Made: {{ totalRequest }}
+                </h4>
+              </div>
+              <div class="card-text text-center m-1">
+                <router-link to="/admin/request">
+                  <button class="btn btn-primary">View Requests</button>
+                </router-link>
+              </div>
             </div>
           </div>
         </div>
@@ -47,8 +70,19 @@
         <div class="card">
           <div class="card-body">
             <div class="card-body">
-              <h4 class="card-title">Title</h4>
-              <h6 class="card-subtitle text-muted">Subtitle</h6>
+              <div class="card-title text-center">
+                <h1>Categories</h1>
+              </div>
+              <div class="card-text">
+                <h4 class="text-center">
+                  Total Categories: {{ totalCategory }}
+                </h4>
+              </div>
+              <div class="card-text text-center m-1">
+                <router-link to="/admin/category">
+                  <button class="btn btn-primary">View Categories</button>
+                </router-link>
+              </div>
             </div>
           </div>
         </div>
@@ -57,8 +91,17 @@
         <div class="card">
           <div class="card-body">
             <div class="card-body">
-              <h4 class="card-title">Title</h4>
-              <h6 class="card-subtitle text-muted">Subtitle</h6>
+              <div class="card-title text-center">
+                <h1>Products</h1>
+              </div>
+              <div class="card-text">
+                <h4 class="text-center">Total Products: {{ totalProduct }}</h4>
+              </div>
+              <div class="card-text text-center m-1">
+                <router-link to="/admin/product">
+                  <button class="btn btn-primary">View Products</button>
+                </router-link>
+              </div>
             </div>
           </div>
         </div>
@@ -68,7 +111,79 @@
 </template>
 
 <script>
+import BarChart from "@/components/charts/BarChart.vue";
+import LineChart from "../components/charts/LineChart.vue";
+
 export default {
   name: "AdminView",
+  components: {
+    BarChart,
+    LineChart,
+  },
+
+  data() {
+    return {
+      totalRequest: 0,
+      totalCategory: 0,
+      totalProduct: 0,
+    };
+  },
+
+  created() {
+    this.$store.dispatch("categories/getRequestCategoryAdmin").then((data) => {
+      if (this.$store.getters["categories/error"]) {
+        this.$router.push("/login");
+        this.$toast.error(this.$store.getters["categories/error"]);
+      }
+      this.totalRequest = data.length;
+    });
+    this.$store.dispatch("categories/getAllCategories").then((data) => {
+      if (this.$store.getters["categories/error"]) {
+        this.$router.push("/login");
+        this.$toast.error(this.$store.getters["categories/error"]);
+      }
+      this.totalCategory = data.length;
+    });
+    this.$store.dispatch("products/getAllProducts").then((data) => {
+      if (this.$store.getters["products/error"]) {
+        this.$router.push("/login");
+        this.$toast.error(this.$store.getters["products/error"]);
+      }
+      this.totalProduct = data.length;
+    });
+  },
 };
 </script>
+
+<style scoped>
+.card {
+  border: 1px solid rgba(255, 255, 255, 0.125);
+  border-radius: 0.5rem;
+  transition: box-shadow 0.3s;
+  background: #27293d;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.card:hover {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.btn-outline-primary {
+  color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-outline-primary:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Additional styling for dark background */
+.container-fluid {
+  margin-top: -20px;
+  min-height: 100vh;
+  color: #fff;
+  background-color: #1e1e2b;
+}
+</style>

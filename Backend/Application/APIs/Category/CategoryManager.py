@@ -39,7 +39,7 @@ class RequestCategoryRequestByManagerAPI(Resource):
       
       category_requests = CategoryRequest.query.outerjoin(User, CategoryRequest.approved_by == User.id)\
         .add_columns(
-          CategoryRequest.id,CategoryRequest.category_name, CategoryRequest.description, CategoryRequest.type, 
+          CategoryRequest.category_id,CategoryRequest.category_name, CategoryRequest.description, CategoryRequest.type, 
           CategoryRequest.request_status, CategoryRequest.request_by, CategoryRequest.create_date, 
           CategoryRequest.last_update_date, CategoryRequest.id, CategoryRequest.approved_by, 
           CategoryRequest.approved_date, (User.first_name + ' ' + User.last_name).label('approved_by_name'))\

@@ -17,23 +17,6 @@
         <div class="card">
           <div class="card-body">
             <div class="card-title text-center">
-              <h4>Products Table</h4>
-            </div>
-            <div class="card-text mb-2">
-              <button class="btn btn-primary" @click="onClickCreateProduct">
-                Create Product
-              </button>
-            </div>
-            <div class="card-text">
-              <ManagerProductTable />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 mt-3">
-        <div class="card">
-          <div class="card-body">
-            <div class="card-title text-center">
               <h4>Category Table</h4>
             </div>
             <div class="card-text mb-2">
@@ -43,6 +26,23 @@
             </div>
             <div class="card-text">
               <ManagerCategoryTable />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 mt-3">
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title text-center">
+              <h4>Products Table</h4>
+            </div>
+            <div class="card-text mb-2">
+              <button class="btn btn-primary" @click="onClickCreateProduct">
+                Create Product
+              </button>
+            </div>
+            <div class="card-text">
+              <ManagerProductTable />
             </div>
           </div>
         </div>

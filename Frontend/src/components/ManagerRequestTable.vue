@@ -18,8 +18,8 @@
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
-import StatusRenderer from "./StatusRenderer.vue";
-import TypeRenderer from "./TypeRenderer.vue";
+import StatusRenderer from "@/components/StatusRenderer.vue";
+import TypeRenderer from "@/components/TypeRenderer.vue";
 
 const textfilterParams = {
   filterOptions: [

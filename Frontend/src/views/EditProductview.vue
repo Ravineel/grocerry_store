@@ -173,12 +173,10 @@ export default {
             };
           } else {
             console.error("Product data not found");
-            // Handle the case where product data is not available
           }
         })
         .catch((error) => {
           console.error("Error fetching product data:", error);
-          // Handle the error, show a message, or redirect to an error page
         });
     }
   },

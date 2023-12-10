@@ -18,7 +18,7 @@
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
-import ActionsRenderer from "./ActionsRenderer.vue";
+import ActionsRenderer from "@/components/ActionsRenderer.vue";
 
 const textfilterParams = {
   filterOptions: [

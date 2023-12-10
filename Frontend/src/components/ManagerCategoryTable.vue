@@ -154,6 +154,7 @@ export default {
     },
     onDeleteClick(param) {
       const payload = {
+        category_id: param.category_id,
         category_name: param.category_name,
         description: param.description,
         type: "DELETE",
