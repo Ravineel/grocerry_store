@@ -53,7 +53,9 @@ from Application.APIs.User.LoginLogoutSignUp import Login, Logout, SignUp
 from Application.APIs.Category.Category import CategoryGeneralAPI, CategoryAdminAPI, CategoryByIdAPI,CategoryRequestAPI
 from Application.APIs.Category.CategoryManager import RequestCategoryRequestByManagerAPI
 from Application.APIs.Product.Product import ProductGeneralAPI, ProductByIdAPI, ProductManagerAPI
-from Application.APIs.Order.Order import CheckoutApi
+from Application.APIs.Order.Order import CheckoutApi, getAllOrdersIdUserApi, getUserOrdersApi, getAllOrdersIdAdminApi
+
+
 # user apis
 api.add_resource(Login, '/api/v1/user/login')
 api.add_resource(Logout, '/api/v1/user/logout')
@@ -86,6 +88,16 @@ api.add_resource(ProductByIdAPI, '/api/v1/product/get/<int:product_id>')
 
 #checkout api
 api.add_resource(CheckoutApi, '/api/v1/order/checkout')
+
+# get all orders id user api
+api.add_resource(getAllOrdersIdUserApi, '/api/v1/user/orders/get/all')
+
+# get user orders api
+api.add_resource(getUserOrdersApi, '/api/v1/user/orders/get/orders_detail')
+
+# get all orders id admin api
+api.add_resource(getAllOrdersIdAdminApi, '/api/v1/admin/orders/get/all')
+
 
 
 if __name__ == "__main__":

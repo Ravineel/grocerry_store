@@ -156,11 +156,7 @@ class CategoryRequestAPI(Resource):
           (user_requested_by.first_name + ' ' + user_requested_by.last_name).label('requested_by_name')
       ) \
       .all()
-      
-      print(category_requests)
-        
-      
-      
+    
       
       return category_requests, 200
     except Exception as e:
