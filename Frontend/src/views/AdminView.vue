@@ -36,14 +36,14 @@
               <div class="card-title text-center">
                 <h1>Store Managers</h1>
               </div>
-
-              <div class="chart-area">
-                <BarChart />
-              </div>
-              <div class="card-text text-center mt-3">
+              <div class="card-subtitle m-1">
                 <router-link to="/admin/manager">
                   <button class="btn btn-primary">View Managers</button>
                 </router-link>
+              </div>
+
+              <div class="chart-area">
+                <BarChart />
               </div>
             </div>
           </div>

@@ -85,15 +85,19 @@ export default {
       this.$store
         .dispatch("checkout/createOrder", payload)
         .then((res) => {
-          if (this.$store.getters["checkout/created"]) {
+          if (sessionStorage.getItem("isAuthenticated")) {
             this.cart = [];
             localStorage.removeItem("cart");
-            this.$router.push({ name: "Home" });
-            this.$toast.success("Order placed successfully! ");
+            if (this.$store.getters["checkout/created"]) {
+              this.$router.push({ name: "Home" });
+              this.$toast.success("Order placed successfully! ");
+            } else {
+              this.$toast.warning(this.$store.getters["checkout/error"]);
+              this.$toast.error("Order failed! ");
+            }
           } else {
-            this.$router.push({ name: "Logout" });
-            this.$toast.warning(this.$store.getters["checkout/error"]);
-            this.$toast.error("Order failed! ");
+            this.$router.push({ name: "Login" });
+            this.$toast.success("Session Expired! Please Login Again!");
           }
         })
         .catch((err) => {

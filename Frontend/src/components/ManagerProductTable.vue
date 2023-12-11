@@ -197,9 +197,15 @@ export default {
       const payload = {
         product_id: param.product_id,
       };
-      this.$store.dispatch("products/deleteProduct", payload).then((data) => {
-        this.gridApi.applyTransaction({ remove: [param] });
-      });
+
+      if (confirm("Are you sure you want to delete this product?")) {
+        this.$store.dispatch("products/deleteProduct", payload).then((data) => {
+          this.$toast.success("Product deleted successfully");
+          this.gridApi.applyTransaction({ remove: [param] });
+        });
+      } else {
+        this.$toast.error("Product not deleted");
+      }
     },
   },
 };
