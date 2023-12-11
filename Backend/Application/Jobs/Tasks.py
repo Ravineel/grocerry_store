@@ -6,8 +6,8 @@ import flask_excel as excel
 from json import dumps
 from httplib2 import Http
 
+import moment
 
- 
 
 @shared_task(ignore_result=False)
 def send_user_alert():
@@ -22,20 +22,17 @@ def send_user_alert():
     
     if users:
       for user in users:
-        print(user.last_login)
-        print(date.today())
+
         if user.last_login is None:
           msg = "Hi {}, you have not visited the site today, please visit to get the latest Products".format(user.first_name + " " + user.last_name)
         
-        elif user.last_login != date.today():
+        elif user.last_login.date() != date.today():
           msg = "Hi {}, you have not visited the site today, please visit to get the latest Products".format(user.first_name + " " + user.last_name)
-        
-        
+      
         else:
-          print(user.orders)
           if not user.orders:
             msg = "Hi {}, you have not made any purchase yet, please head to the site to get the latest Products".format(user.first_name + " " + user.last_name)
-          elif user.orders[-1].order_date != datetime.date.today():
+          elif user.orders[-1].order_date.date() != date.today():
             msg = "Hi {}, you have not made any purchase today, please head to the site to get the latest Products".format(user.first_name + " " + user.last_name)
         
         response = http_obj.request(

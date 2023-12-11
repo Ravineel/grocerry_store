@@ -86,8 +86,8 @@
                     aria-label="Default select example"
                     required
                   >
-                    <option value="1">User</option>
-                    <option value="2">Manager</option>
+                    <option value="user">User</option>
+                    <option value="manager">Manager</option>
                   </select>
                 </div>
               </div>
@@ -111,7 +111,7 @@ export default {
       last_Name: "",
       email: "",
       password: "",
-      role: 0,
+      role: null,
     };
   },
   methods: {
