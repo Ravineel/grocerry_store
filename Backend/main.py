@@ -50,6 +50,7 @@ app, api, celery = create_app()
 
 
 from Application.APIs.User.LoginLogoutSignUp import Login, Logout, SignUp
+from Application.APIs.User.User import userManagerRole, userCount
 from Application.APIs.Category.Category import CategoryGeneralAPI, CategoryAdminAPI, CategoryByIdAPI,CategoryRequestAPI
 from Application.APIs.Category.CategoryManager import RequestCategoryRequestByManagerAPI
 from Application.APIs.Product.Product import ProductGeneralAPI, ProductByIdAPI, ProductManagerAPI
@@ -60,6 +61,13 @@ from Application.APIs.Order.Order import CheckoutApi, getAllOrdersIdUserApi, get
 api.add_resource(Login, '/api/v1/user/login')
 api.add_resource(Logout, '/api/v1/user/logout')
 api.add_resource(SignUp, '/api/v1/user/signup')
+
+
+# user manager apis
+api.add_resource(userManagerRole, '/api/v1/admin/get/manager','/api/v1/admin/update/manager')
+
+# user count apis
+api.add_resource(userCount, '/api/v1/admin/get/user_count')
 
 # category apis
 api.add_resource(CategoryGeneralAPI, '/api/v1/category/get/all')

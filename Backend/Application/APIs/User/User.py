@@ -57,4 +57,41 @@ class userManagerRole(Resource):
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
     
-    
+# get user count siguped by month api
+user_count_list = {
+                   
+  "user_count": fields.Integer,
+  "month": fields.String,
+  "year": fields.String,
+}
+
+
+class userCount(Resource):
+    @level_required(3)
+    @marshal_with(user_count_list)
+    def get(current_app,self):
+      try:
+        data = []
+        
+        users =  User.query.all()
+        
+        for user in users:
+          user_count = User.query.filter_by(id=user.id).count()
+          month = user.account_created_at.strftime("%B")
+          year = user.account_created_at.strftime("%Y")
+          data.append({
+            "user_count":user_count,
+            "month":month,
+            "year":year
+            })
+          
+        print(data)
+        
+        if not users:
+          raise BusinessValidationError(400, "USER_NOT_FOUND", "User not found")
+        return data,200
+      except BusinessValidationError as e:
+        raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
+      except Exception as e:
+        raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
+
