@@ -96,7 +96,7 @@ export default {
               this.$toast.success("Request for Category Created Successfully");
             }
           });
-      } else if (userRole === 3) {
+      } else if (userRole === "3") {
         this.$store
           .dispatch("categories/updateCategoryAdmin", this.formdata)
           .then((res) => {
@@ -104,7 +104,7 @@ export default {
               this.$router.push("/admin");
               this.$toast.error(this.$store.getters["categories/error"]);
             } else {
-              this.$router.push({ name: "Admin" });
+              this.$router.push({ name: "AdminCategory" });
               this.$toast.success("Category Created Successfully");
             }
           });

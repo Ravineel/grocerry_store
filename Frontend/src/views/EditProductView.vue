@@ -188,10 +188,13 @@ export default {
         .then((res) => {
           if (this.$store.getters["products/error"]) {
             this.$toast.error(this.$store.getters["products/error"]);
-            this.$router.push({ name: "Login" });
           } else {
             this.$toast.success("Product Update Successfully");
-            this.$router.push({ name: "Manager" });
+            if (sessionStorage.getItem("userRole") == 2) {
+              this.$router.push({ name: "Manager" });
+            } else if (sessionStorage.getItem("userRole") == 3) {
+              this.$router.push({ name: "AdminProduct" });
+            }
           }
         });
     },

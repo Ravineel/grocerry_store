@@ -1,6 +1,11 @@
 // initial state
 const state = () => ({
   user: [],
+  managers: [],
+
+  manager_chart: [],
+  data_chart: [],
+
   isAuthenticated: false,
   token: null,
   errors: [],
@@ -14,6 +19,9 @@ const state = () => ({
 // getters
 const getters = {
   user: (state) => state.user,
+  managers: (state) => state.managers,
+  manager_chart: (state) => state.manager_chart,
+  data_chart: (state) => state.data_chart,
   isAuthenticated: (state) => state.isAuthenticated,
   getToken: (state) => state.token,
   getErrors: (state) => state.errors,
@@ -100,6 +108,212 @@ const actions = {
       commit("setCreated", false);
     }
   },
+
+  async getManagers({ commit }) {
+    commit("setErrors", false);
+    commit("setLoading", true);
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/admin/get/manager",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+          },
+        }
+      );
+
+      const status = response.status;
+      const data = await response.json();
+      console.log(data);
+
+      if (status === 200) {
+        commit("setManagers", data);
+        commit("setLoading", false);
+        return data;
+      } else if (status === 401) {
+        sessionStorage.removeItem("userToken");
+        sessionStorage.removeItem("isAuthenticated");
+        commit("setLoading", false);
+
+        if (data.error_code === "TOKEN_EXPIRED") {
+          commit("setErrors", "Your session has expired. Please login again.");
+        }
+        if (data.error_code === "TOKEN_INVALID") {
+          commit("setErrors", "Your session is invalid. Please login again.");
+        }
+        if (data.error_code === "INVALID_ROLE") {
+          commit("setErrors", "You are not authorized to perform this action.");
+        }
+        console.log("An error occured: ", data.error_message);
+      } else {
+        commit("setCreated", false);
+        commit("setLoading", false);
+        commit("setErrors", data.error_message);
+      }
+      manager1_password;
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setErrors", err);
+      commit("setLoading", false);
+    }
+  },
+
+  async updateManagerAccess({ commit }, payload) {
+    commit("setErrors", false);
+    commit("setLoading", true);
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/admin/update/manager",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const status = response.status;
+      const data = await response.json();
+      console.log(data);
+
+      if (status === 200) {
+        commit("setLoading", false);
+        return data;
+      } else if (status === 401) {
+        sessionStorage.removeItem("userToken");
+        sessionStorage.removeItem("isAuthenticated");
+        commit("setLoading", false);
+
+        if (data.error_code === "TOKEN_EXPIRED") {
+          commit("setErrors", "Your session has expired. Please login again.");
+        }
+        if (data.error_code === "TOKEN_INVALID") {
+          commit("setErrors", "Your session is invalid. Please login again.");
+        }
+        if (data.error_code === "INVALID_ROLE") {
+          commit("setErrors", "You are not authorized to perform this action.");
+        }
+        console.log("An error occured: ", data.error_message);
+      } else {
+        commit("setCreated", false);
+        commit("setLoading", false);
+        commit("setErrors", data.error_message);
+      }
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setErrors", err);
+      commit("setLoading", false);
+    }
+  },
+  async getManagerChartData({ commit }) {
+    commit("setErrors", false);
+    commit("setLoading", true);
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/admin/get/manager_data",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+          },
+        }
+      );
+
+      const status = response.status;
+      const data = await response.json();
+      console.log(data);
+
+      if (status === 200) {
+        commit("setManagerChart", data);
+        commit("setLoading", false);
+        return data;
+      } else if (status === 401) {
+        sessionStorage.removeItem("userToken");
+        sessionStorage.removeItem("isAuthenticated");
+        commit("setLoading", false);
+
+        if (data.error_code === "TOKEN_EXPIRED") {
+          commit("setErrors", "Your session has expired. Please login again.");
+        }
+        if (data.error_code === "TOKEN_INVALID") {
+          commit("setErrors", "Your session is invalid. Please login again.");
+        }
+        if (data.error_code === "INVALID_ROLE") {
+          commit("setErrors", "You are not authorized to perform this action.");
+        }
+        console.log("An error occured: ", data.error_message);
+      } else {
+        commit("setCreated", false);
+        commit("setLoading", false);
+        commit("setErrors", data.error_message);
+      }
+      manager1_password;
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setErrors", err);
+      commit("setLoading", false);
+    }
+  },
+
+  async getDataCount({ commit }) {
+    commit("setErrors", false);
+    commit("setLoading", true);
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/admin/get/data_count",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+          },
+        }
+      );
+
+      const status = response.status;
+      const data = await response.json();
+      console.log(data);
+
+      if (status === 200) {
+        commit("setManagerChart", data);
+        commit("setLoading", false);
+        return data;
+      } else if (status === 401) {
+        sessionStorage.removeItem("userToken");
+        sessionStorage.removeItem("isAuthenticated");
+        commit("setLoading", false);
+
+        if (data.error_code === "TOKEN_EXPIRED") {
+          commit("setErrors", "Your session has expired. Please login again.");
+        }
+        if (data.error_code === "TOKEN_INVALID") {
+          commit("setErrors", "Your session is invalid. Please login again.");
+        }
+        if (data.error_code === "INVALID_ROLE") {
+          commit("setErrors", "You are not authorized to perform this action.");
+        }
+        console.log("An error occured: ", data.error_message);
+      } else {
+        commit("setCreated", false);
+        commit("setLoading", false);
+        commit("setErrors", data.error_message);
+      }
+      manager1_password;
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setErrors", err);
+      commit("setLoading", false);
+    }
+  },
 };
 
 // mutations
@@ -127,6 +341,15 @@ const mutations = {
   },
   setSignedUp(state, SignedUp) {
     state.SignedUp = SignedUp;
+  },
+  setManagers(state, managers) {
+    state.managers = managers;
+  },
+  setManagerChart(state, manager_chart) {
+    state.manager_chart = manager_chart;
+  },
+  setDataChart(state, data_chart) {
+    state.data_chart = data_chart;
   },
 };
 

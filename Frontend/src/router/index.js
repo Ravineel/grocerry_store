@@ -9,6 +9,9 @@ import ProductEditView from "@/views/EditProductView.vue";
 import CategoryCreateView from "@/views/CreateCategoryView.vue";
 import EditCategoryView from "@/views/EditCategoryView.vue";
 import AdminRequestView from "@/views/AdminRequestsView.vue";
+import AdminCategoryView from "@/views/AdminCategoryView.vue";
+import AdminProductView from "@/views/AdminProductView.vue";
+import AdminMangerView from "@/views/AdminManagersView.vue";
 
 import { useToast } from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-default.css";
@@ -98,6 +101,33 @@ const router = createRouter({
       path: "/admin/request",
       name: "AdminRequest",
       component: AdminRequestView,
+      meta: {
+        requiresAuth: true,
+        requiresRole: ["admin"],
+      },
+    },
+    {
+      path: "/admin/category",
+      name: "AdminCategory",
+      component: AdminCategoryView,
+      meta: {
+        requiresAuth: true,
+        requiresRole: ["admin"],
+      },
+    },
+    {
+      path: "/admin/product",
+      name: "AdminProduct",
+      component: AdminProductView,
+      meta: {
+        requiresAuth: true,
+        requiresRole: ["admin"],
+      },
+    },
+    {
+      path: "/admin/manager",
+      name: "AdminManager",
+      component: AdminMangerView,
       meta: {
         requiresAuth: true,
         requiresRole: ["admin"],

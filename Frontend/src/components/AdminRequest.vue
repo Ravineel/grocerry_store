@@ -234,7 +234,7 @@ export default {
             this.$toast.error(this.$store.getters["categories/error"]);
           } else {
             this.$toast.success("Category Rejected");
-            this.$router.push({ name: "AdminRequest" });
+            this.$router.push({ name: "Admin" });
           }
         });
     },

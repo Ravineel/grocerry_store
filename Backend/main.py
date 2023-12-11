@@ -62,7 +62,7 @@ def setup_periodic_tasks(sender, **kwargs):
 
 
 from Application.APIs.User.LoginLogoutSignUp import Login, Logout, SignUp
-from Application.APIs.User.User import userManagerRole, userCount
+from Application.APIs.User.User import userManagerRole, managerData,dataCount
 from Application.APIs.Category.Category import CategoryGeneralAPI, CategoryAdminAPI, CategoryByIdAPI,CategoryRequestAPI
 from Application.APIs.Category.CategoryManager import RequestCategoryRequestByManagerAPI
 from Application.APIs.Product.Product import ProductGeneralAPI, ProductByIdAPI, ProductManagerAPI
@@ -78,8 +78,6 @@ api.add_resource(SignUp, '/api/v1/user/signup')
 # user manager apis
 api.add_resource(userManagerRole, '/api/v1/admin/get/manager','/api/v1/admin/update/manager')
 
-# user count apis
-api.add_resource(userCount, '/api/v1/admin/get/user_count')
 
 # category apis
 api.add_resource(CategoryGeneralAPI, '/api/v1/category/get/all')
@@ -118,7 +116,11 @@ api.add_resource(getUserOrdersApi, '/api/v1/user/orders/get/orders_detail')
 # get all orders id admin api
 api.add_resource(getAllOrdersIdAdminApi, '/api/v1/admin/orders/get/all')
 
+#
+api.add_resource(managerData, '/api/v1/admin/get/manager_data')
 
+#
+api.add_resource(dataCount, '/api/v1/admin/get/data_count')
 
 if __name__ == "__main__":
   app.run(debug=True, host='0.0.0.0', port=5000)

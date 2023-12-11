@@ -1,6 +1,6 @@
 from flask import current_app as app, jsonify, make_response, request
 from flask_restful import Resource, reqparse, marshal_with, fields
-from Application.models import User
+from Application.models import User, Product, Category, Order
 from Application.db import db
 from Application.error_handling import BusinessValidationError
 from Application.middleware import level_required
@@ -64,19 +64,59 @@ class userManagerRole(Resource):
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
     
-# get user count siguped by month api
 
-
-user_count_list = {
-                   
-  "user_count": fields.Integer,
-  "month": fields.String,
-  "year": fields.String,
+manager_data_fields = {
+  "active_managers_count": fields.Integer,
+  "inactive_managers_count": fields.Integer,
+  "total_managers_count": fields.Integer,
 }
 
+class managerData(Resource):
+  
+  @level_required(3)
+  @marshal_with(manager_data_fields)
+  def get(current_user,self):
+    try:
+      active_managers_count = User.query.filter_by(role=2,is_manager_active=True).count()
+      inactive_managers_count = User.query.filter_by(role=2,is_manager_active=False).count()
+      total_managers_count = User.query.filter_by(role=2).count()
+      
+      data= {
+        "active_managers_count":active_managers_count,
+        "inactive_managers_count":inactive_managers_count,
+        "total_managers_count":total_managers_count
+      }
+      return data,200
+      
+    except BusinessValidationError as e:
+      raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
 
-class userCount(Resource):
-    @level_required(3)
-    @marshal_with(user_count_list)
-    def get(current_app,self):
-      pass
+
+data_count ={
+  "total_users": fields.Integer,
+  "total_products": fields.Integer,
+  "total_categories": fields.Integer,
+  "total_orders": fields.Integer,
+}
+
+class dataCount(Resource):
+  
+  @level_required(3)
+  @marshal_with(data_count)
+  def get(current_user,self):
+    try:
+      total_users = User.query.filter_by(role=1).count()
+      total_products = Product.query.count()
+      total_categories = Category.query.count()
+      total_orders = Order.query.count()
+      
+      data= {
+        "total_users":total_users,
+        "total_products":total_products,
+        "total_categories":total_categories,
+        "total_orders":total_orders
+      }
+      return data,200
+      
+    except BusinessValidationError as e:
+      raise BusinessValidationError(e.status_code, e.error_code, e.error_message)

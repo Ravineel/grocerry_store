@@ -160,7 +160,12 @@ export default {
             this.$router.push({ name: "Login" });
           } else {
             this.$toast.success("Product Created Successfully");
-            this.$router.push({ name: "Manager" });
+
+            if (sessionStorage.getItem("userRole") === "3") {
+              this.$router.push({ name: "AdminProduct" });
+            } else if (sessionStorage.getItem("userRole") === "2") {
+              this.$router.push({ name: "Manager" });
+            }
           }
         });
     },

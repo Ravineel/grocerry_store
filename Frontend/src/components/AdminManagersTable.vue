@@ -1,6 +1,6 @@
 <template>
   <ag-grid-vue
-    style="width: 100%; height: 400px"
+    style="width: 100%; height: 600px"
     :class="themeClass"
     :columnDefs="columnDefs"
     @grid-ready="onGridReady"
@@ -18,7 +18,8 @@
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
-import ActionsRenderer from "@/components/ActionsRenderer.vue";
+import ManagerStatus from "@/components/ManagerStatus.vue";
+import ManagerApprovalRender from "@/components/ManagerApprovalRender.vue";
 
 const textfilterParams = {
   filterOptions: [
@@ -65,7 +66,8 @@ const dateFilterParams = {
 export default {
   components: {
     AgGridVue,
-    ActionsRenderer,
+    ManagerStatus,
+    ManagerApprovalRender,
   },
   data: function () {
     return {
@@ -92,44 +94,58 @@ export default {
   },
 
   beforeMount() {
-    (this.columnDefs = [
+    this.columnDefs = [
       {
-        field: "category_id",
-        headerName: "Category ID",
+        field: "id",
+        headerName: "Request ID",
         minWidth: 100,
         filter: "agNumberColumnFilter",
         filterParams: numberFilterParams,
         sort: "asc",
       },
       {
-        field: "category_name",
-        headerName: "Category Name",
-        minWidth: 150,
+        field: "first_name",
+        headerName: "First Name",
+        minWidth: 100,
         filter: "agTextColumnFilter",
         filterParams: textfilterParams,
       },
-
       {
-        field: "description",
-        headerName: "Description",
-        minWidth: 150,
+        field: "last_name",
+        headerName: "Last Name",
+        minWidth: 100,
         filter: "agTextColumnFilter",
         filterParams: textfilterParams,
+      },
+      {
+        field: "email",
+        headerName: "Email",
+        minWidth: 100,
+        filter: "agTextColumnFilter",
+        filterParams: textfilterParams,
+      },
+      {
+        field: "is_manager_active",
+        headerName: "Status",
+        minWidth: 100,
+        filter: "agTextColumnFilter",
+        filterParams: textfilterParams,
+        cellRenderer: "ManagerStatus",
       },
       {
         headerName: "Actions",
         minWidth: 200,
-        filter: false,
-        cellRenderer: "ActionsRenderer",
+        cellRenderer: "ManagerApprovalRender",
         cellRendererParams: {
-          onEdit: this.onEditClick,
-          onDelete: this.onDeleteClick,
+          onApprove: this.onApprove,
+          onReject: this.onReject,
         },
       },
-    ]),
-      (this.components = {
-        ActionsRenderer: ActionsRenderer,
-      });
+    ];
+
+    this.components = {
+      managerStatus: ManagerStatus,
+    };
   },
 
   methods: {
@@ -138,37 +154,49 @@ export default {
 
       const updateData = (data) => (this.rowData = data);
 
-      this.$store.dispatch("categories/getAllCategories").then((data) => {
-        updateData(data);
+      this.$store.dispatch("user/getManagers").then((data) => {
+        if (this.$store.getters["user/getErrors"]) {
+          this.$toast.error(this.$store.getters["categories/getErrors"]);
+        } else if (sessionStorage.getItem("isAuthenticated")) {
+          updateData(data);
+        } else {
+          this.$router.push({ name: "Login" });
+          this.$toast.error("Please Login First");
+        }
       });
     },
     onSelectionChanged() {
       const selectedRows = this.gridApi.getSelectedRows();
       this.selectedRow = selectedRows[0];
     },
-    onEditClick(param) {
-      this.$router.push({
-        name: "EditCategory",
-        params: { category_id: param.category_id },
+    onApprove(param) {
+      const paylod = {
+        manager_id: param.id,
+        is_manager_active: !param.is_manager_active,
+      };
+      this.$store.dispatch("user/updateManagerAccess", paylod).then((res) => {
+        if (this.$store.getters["user/getErrors"]) {
+          this.$toast.error(this.$store.getters["user/getErrors"]);
+        } else {
+          this.$toast.success("Manger Approved");
+          this.$router.push({ name: "Admin" });
+        }
       });
     },
-    onDeleteClick(param) {
-      const payload = {
-        category_id: param.category_id,
+    onReject(param) {
+      const paylod = {
+        manager_id: param.id,
+        is_manager_active: !param.is_manager_active,
       };
 
-      if (confirm("Are you sure you want to delete this category?")) {
-        this.$store
-          .dispatch("categories/deleteCategoryAdmin", payload)
-          .then((data) => {
-            if (data.success == "true") {
-              this.$toast.success("Category Request for Delete is Successfull");
-            } else {
-              this.$router.push("/login");
-              this.$toast.error(this.$store.getters["categories/error"]);
-            }
-          });
-      } else this.$toast.error("Category Request for Delete is Unsuccessfull");
+      this.$store.dispatch("user/updateManagerAccess", paylod).then((res) => {
+        if (this.$store.getters["user/getErrors"]) {
+          this.$toast.error(this.$store.getters["user/getErrors"]);
+        } else {
+          this.$toast.success("Manager Access Revoked");
+          this.$router.push({ name: "Admin" });
+        }
+      });
     },
   },
 };

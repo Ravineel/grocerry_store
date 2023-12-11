@@ -23,22 +23,22 @@ class Login(Resource):
 
       user = User.query.filter_by(email=args['email']).first()
       
-      print(user)
+    
       
       if user:
         user_role = user.role
       
       if not user:
-        print("User not found")
+  
         raise BusinessValidationError(404, "USER_NOT_FOUND", "User not found")      
 
       if not check_password_hash(user.password_hash, args['password']):
-        print("Invalid password")
+ 
         raise BusinessValidationError(403, "INVALID_PASSWORD_USERNAME", "Invalid password or USERNAME")
 
       if  user and user_role == 2:
         if not user.is_manager_active:
-          [print("Manager is not active")]
+         
           raise BusinessValidationError(403, "MANAGER_NOT_ACTIVE", "Manager is not active")
 
 
@@ -67,7 +67,7 @@ class Login(Resource):
           },
           'token': token
       }
-      print(response_data)
+
 
       return make_response(jsonify(response_data), 200)
     except BusinessValidationError as e:
@@ -91,7 +91,7 @@ class Logout(Resource):
       
       if user:
         # Access current_user here
-        print(f"Logging out user: {current_user.email}")
+     
 
         user.jwt_token = None
         db.session.commit()
@@ -119,7 +119,7 @@ class SignUp(Resource):
   def post(self):
     try:
       args = SingUp_parser.parse_args()
-      print(args)
+
       
       if not args['email'] or not args['password'] or not args['first_name'] or not args['role']:
         raise BusinessValidationError(400, "MISSING_REQUIRED_PARAMETERS", "Username, email, password, first_name and role are required")

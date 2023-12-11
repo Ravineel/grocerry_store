@@ -118,20 +118,33 @@ class ProductManagerAPI(Resource): #create, update, delete product
       args = parser.parse_args()
       
       product = Product.query.filter_by(product_id=args['product_id']).first()
+      
       if product is None:
+     
         raise BusinessValidationError(404, "PRODUCT_NOT_FOUND", "Product with id {} not found".format(args['product_id']))
+    
       product.product_name = args['product_name']
+      
       product.description = args['description']
+     
       product.category_id = args['category_id']
+  
       product.qty = args['qty']
+
       product.rate = args['rate']
+     
       product.unit = args['unit']
+   
       product.manufacturer = args['manufacturer']
-      product.mfg_date = date(args['mfg_date'])
+     
+      product.mfg_date = date.fromisoformat(args['mfg_date'])
+     
       product.last_update_date = date.today()
       product.last_update_by = current_user.id
+     
 
       db.session.commit()
+   
       return make_response(jsonify({"success":True, "message":"Product Updated sucessfully"}), 200)
     except BusinessValidationError as e:
       raise BusinessValidationError(e.status_code, e.error_code, e.error_message)

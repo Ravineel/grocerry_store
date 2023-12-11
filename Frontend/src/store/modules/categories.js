@@ -85,9 +85,155 @@ const actions = {
     }
   },
 
-  async createCategoryAdmin({ commit }, payload) {},
-  async updateCategoryAdmin({ commit }, payload) {},
-  async deleteCategoryAdmin({ commit }, payload) {},
+  // '/api/v1/category/admin/create','/api/v1/category/admin/update','/api/v1/category/admin/delete'
+
+  async createCategoryAdmin({ commit }, payload) {
+    commit("setLoading", true);
+    commit("setCreated", false);
+    commit("setError", null);
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/category/admin/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      const status = response.status;
+      const data = await response.json();
+
+      if (status === 200) {
+        commit("setCreated", true);
+        commit("setLoading", false);
+        return data;
+      } else if (status === 401) {
+        sessionStorage.removeItem("userToken");
+        sessionStorage.removeItem("isAuthenticated");
+        commit("setLoading", false);
+
+        if (data.error_code === "TOKEN_EXPIRED") {
+          commit("setError", "Your session has expired. Please login again.");
+        }
+        if (data.error_code === "TOKEN_INVALID") {
+          commit("setError", "Your session is invalid. Please login again.");
+        }
+        if (data.error_code === "INVALID_ROLE") {
+          commit("setError", "You are not authorized to perform this action.");
+        }
+        console.log("An error occured: ", data.error_message);
+      } else {
+        commit("setCreated", false);
+        commit("setLoading", false);
+        commit("setError", data.error_message);
+      }
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setError", err);
+      commit("setLoading", false);
+    }
+  },
+  async updateCategoryAdmin({ commit }, payload) {
+    commit("setLoading", true);
+    commit("setCreated", false);
+    commit("setError", null);
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/category/admin/update",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      const status = response.status;
+      const data = await response.json();
+
+      if (status === 200) {
+        commit("setCreated", true);
+        commit("setLoading", false);
+        return data;
+      } else if (status === 401) {
+        sessionStorage.removeItem("userToken");
+        sessionStorage.removeItem("isAuthenticated");
+        commit("setLoading", false);
+
+        if (data.error_code === "TOKEN_EXPIRED") {
+          commit("setError", "Your session has expired. Please login again.");
+        }
+        if (data.error_code === "TOKEN_INVALID") {
+          commit("setError", "Your session is invalid. Please login again.");
+        }
+        if (data.error_code === "INVALID_ROLE") {
+          commit("setError", "You are not authorized to perform this action.");
+        }
+        console.log("An error occured: ", data.error_message);
+      } else {
+        commit("setCreated", false);
+        commit("setLoading", false);
+        commit("setError", data.error_message);
+      }
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setError", err);
+      commit("setLoading", false);
+    }
+  },
+  async deleteCategoryAdmin({ commit }, payload) {
+    commit("setLoading", true);
+    commit("setError", null);
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/category/admin/delete",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      const status = response.status;
+      const data = await response.json();
+
+      if (status === 200) {
+        commit("setLoading", false);
+        return data;
+      } else if (status === 401) {
+        sessionStorage.removeItem("userToken");
+        sessionStorage.removeItem("isAuthenticated");
+        commit("setLoading", false);
+
+        if (data.error_code === "TOKEN_EXPIRED") {
+          commit("setError", "Your session has expired. Please login again.");
+        }
+        if (data.error_code === "TOKEN_INVALID") {
+          commit("setError", "Your session is invalid. Please login again.");
+        }
+        if (data.error_code === "INVALID_ROLE") {
+          commit("setError", "You are not authorized to perform this action.");
+        }
+        console.log("An error occured: ", data.error_message);
+      } else {
+        commit("setLoading", false);
+        commit("setError", data.error_message);
+      }
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setError", err);
+      commit("setLoading", false);
+    }
+  },
 
   async createCategoryRequestManager({ commit }, payload) {
     commit("setLoading", true);

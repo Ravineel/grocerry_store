@@ -68,7 +68,7 @@ class CategoryAdminAPI(Resource):
       db.session.add(category)
       db.session.commit()
       
-      return {"message": "Category created successfully!"}, 200
+      return {"message": "Category created successfully!","success":"true"}, 200
     except BusinessValidationError as e:
       raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
     except Exception as e:
@@ -101,7 +101,7 @@ class CategoryAdminAPI(Resource):
       
       db.session.commit()
       
-      return {"message": "Category updated successfully!"}, 200
+      return {"message": "Category updated successfully!","success":"true"}, 200
     except BusinessValidationError as e:
       raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
     except Exception as e:
@@ -124,7 +124,7 @@ class CategoryAdminAPI(Resource):
       db.session.delete(category)
       db.session.commit()
       
-      return {"message": "Category deleted successfully!"}, 200
+      return {"message": "Category deleted successfully!","success":"true"}, 200
     except BusinessValidationError as e:
       raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
     except Exception as e:
@@ -158,10 +158,10 @@ class CategoryRequestAPI(Resource):
   @marshal_with(category_request_fields)
   def get(current_user, self):
     try:
-      print("here 1")
+ 
       user_approved_by = aliased(User)
       user_requested_by = aliased(User)
-      print("here 2")
+    
       
       category_requests = CategoryRequest.query.outerjoin(user_approved_by, CategoryRequest.approved_by == user_approved_by.id) \
       .outerjoin(user_requested_by, CategoryRequest.request_by == user_requested_by.id) \
@@ -175,9 +175,7 @@ class CategoryRequestAPI(Resource):
       )\
       .all()
       
-      print(category_requests)
-      
-      print("here 3")
+
       
       return category_requests, 200
     except Exception as e:

@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid p-5">
-    <div class="row d-flex justify-content-center">
-      <div class="card">
+    <!-- <div class="row d-flex justify-content-center">
+      <div class="card card-graph">
         <div class="card-body">
           <div class="card-body">
             <div class="card-title text-center">
@@ -13,31 +13,37 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="row d-flex justify-content-center mt-3">
       <div class="col-12 col-md-6 mt-1">
-        <div class="card">
+        <div class="card card-user">
           <div class="card-body">
             <div class="card-body">
               <div class="card-title text-center">
                 <h1>User Counts</h1>
               </div>
               <div class="chart-area">
-                <BarChart />
+                <BarChart :chartType="'user'" />
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="col-12 col-md-6 mt-1">
-        <div class="card">
+        <div class="card card-man">
           <div class="card-body">
             <div class="card-body">
               <div class="card-title text-center">
                 <h1>Store Managers</h1>
               </div>
+
               <div class="chart-area">
                 <BarChart />
+              </div>
+              <div class="card-text text-center mt-3">
+                <router-link to="/admin/manager">
+                  <button class="btn btn-primary">View Managers</button>
+                </router-link>
               </div>
             </div>
           </div>
@@ -128,25 +134,28 @@ export default {
       totalProduct: 0,
     };
   },
-
   created() {
     this.$store.dispatch("categories/getRequestCategoryAdmin").then((data) => {
-      if (this.$store.getters["categories/error"]) {
+      if (!sessionStorage.getItem("isAuthenticated")) {
         this.$router.push("/login");
+      } else if (this.$store.getters["categories/error"]) {
         this.$toast.error(this.$store.getters["categories/error"]);
       }
       this.totalRequest = data.length;
     });
+
     this.$store.dispatch("categories/getAllCategories").then((data) => {
-      if (this.$store.getters["categories/error"]) {
+      if (!sessionStorage.getItem("isAuthenticated")) {
         this.$router.push("/login");
+      } else if (this.$store.getters["categories/error"]) {
         this.$toast.error(this.$store.getters["categories/error"]);
       }
       this.totalCategory = data.length;
     });
     this.$store.dispatch("products/getAllProducts").then((data) => {
-      if (this.$store.getters["products/error"]) {
+      if (!sessionStorage.getItem("isAuthenticated")) {
         this.$router.push("/login");
+      } else if (this.$store.getters["products/error"]) {
         this.$toast.error(this.$store.getters["products/error"]);
       }
       this.totalProduct = data.length;
@@ -167,6 +176,11 @@ export default {
 
 .card:hover {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.card-man,
+.card-user {
+  min-height: 400px !important;
 }
 
 .btn-outline-primary {
