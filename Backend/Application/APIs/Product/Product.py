@@ -4,7 +4,7 @@ from Application.models import Category, Product
 from Application.db import db
 from Application.error_handling import BusinessValidationError
 from Application.middleware import level_required
-from datetime import datetime
+from datetime import datetime,date
 
 
 
@@ -18,7 +18,6 @@ Product_fields = {
   'qty': fields.Integer,
   'rate': fields.Float,
   'unit': fields.String,
-  'active': fields.Boolean,
   'manufacturer': fields.String,
   'mfg_date': fields.DateTime,
 }
@@ -34,7 +33,7 @@ class ProductGeneralAPI(Resource):
         .add_columns(
           Product.product_id, Product.product_name, Product.description, 
           Product.create_date, Product.category_id, Category.category_name, 
-          Product.qty, Product.rate, Product.unit, Product.active, 
+          Product.qty, Product.rate, Product.unit,  
           Product.manufacturer, Product.mfg_date)\
         .order_by(Product.qty.desc())\
         .all()
@@ -77,9 +76,6 @@ class ProductManagerAPI(Resource): #create, update, delete product
       args = parser.parse_args()
       
       create_by = current_user.id
-      #convert string to date only
-      mfg_date = datetime.strptime(args['mfg_date'], '%Y-%m-%d')
-      
       
       product = Product(
         product_name=args['product_name'],
@@ -89,11 +85,13 @@ class ProductManagerAPI(Resource): #create, update, delete product
         rate=args['rate'],
         unit=args['unit'],
         manufacturer=args['manufacturer'],
-        mfg_date=mfg_date,
+        mfg_date=date.fromisoformat(args['mfg_date']),
         create_by=create_by,
-
-        
+        create_date=date.today(),
+        last_update_by=create_by,
+        last_update_date=date.today()
       )
+      
       db.session.add(product)
       db.session.commit()
       return make_response(jsonify({"success":True, "message":"Product created sucessfully"}), 200)
@@ -129,8 +127,8 @@ class ProductManagerAPI(Resource): #create, update, delete product
       product.rate = args['rate']
       product.unit = args['unit']
       product.manufacturer = args['manufacturer']
-      product.mfg_date = datetime.strptime(args['mfg_date'], '%Y-%m-%d')
-      product.last_update_date = datetime.now()
+      product.mfg_date = date(args['mfg_date'])
+      product.last_update_date = date.today()
       product.last_update_by = current_user.id
 
       db.session.commit()

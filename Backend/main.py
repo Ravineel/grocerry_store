@@ -2,9 +2,12 @@ from flask import Flask
 from flask_cors import CORS
 from config import LocalDevelopmentConfig
 from Application.db import db
-from Application import workers
+from Application.workers import celery_init_app
+from Application.Jobs.Tasks import send_user_alert, send_user_email
 from flask_restful import Api
 import flask_excel as excel
+from celery.schedules import crontab
+
 
 import os
 
@@ -12,41 +15,50 @@ import os
 
 app = None
 api = None
-celery = None
-
 
 def create_app():
-  app = Flask(__name__, template_folder='templates', static_folder='static')
+  app = Flask(__name__, template_folder='Template', static_folder='static')
   
   CORS(app)
-  
-  
-  if os.getenv('ENV', "development") == 'Production':
-    raise Exception("Not available")
-  else:
-    print("Running in development mode")
-    app.config.from_object(LocalDevelopmentConfig)
+  app.config.from_object(LocalDevelopmentConfig)
 
   db.init_app(app)
   api = Api(app)
   api.init_app(app)
   excel.init_excel(app)
-  
-  with app.app_context():  
-    celery = workers.celery
-    celery.conf.update(
-      broker_url=app.config['CELERY_BROKER_URL'],
-      result_backend=app.config['CELERY_RESULT_BACKEND'],
-      result_expires=3600,
-      enable_utc=False,
-      timezone='Asia/Kolkata',
-    )
-    celery.Task = workers.ContextTask
   app.app_context().push()
+  app.config.from_mapping(
+    CELERY=dict(
+      broker_url = "redis://localhost:6379/1",
+      result_backend = "redis://localhost:6379/2",
+      enable_utc = False,
+      timezone = 'Asia/Kolkata',
+      broker_connection_retry_on_startup=True
+    ),
+  )
 
-  return app, api, celery
+  return app, api
+app, api = create_app()
 
-app, api, celery = create_app()
+
+celery_app = celery_init_app(app)
+
+
+@celery_app.on_after_configure.connect
+def setup_periodic_tasks(sender, **kwargs):
+  sender.add_periodic_task(
+    crontab(minute='*', hour="*", day_of_week='*'),
+    send_user_alert.s(),
+    name='send_user_alert'
+  )  
+  sender.add_periodic_task(
+    crontab(minute=30, hour=17, day_of_month=1, month_of_year='*'),
+    send_user_email.s(),
+    name='send_user_email'
+  )
+ 
+
+
 
 
 from Application.APIs.User.LoginLogoutSignUp import Login, Logout, SignUp

@@ -1,13 +1,31 @@
 <template>
   <div class="app-container">
-    <Navbar />
+    <Navbar :key="has_changed" />
     <router-view :key="$route.fullPath" />
   </div>
 </template>
 
-<script setup>
+<script>
 import { RouterView } from "vue-router";
 import Navbar from "@/views/NavbarView.vue";
+
+export default {
+  name: "App",
+  components: {
+    Navbar,
+    RouterView,
+  },
+  data() {
+    return {
+      has_changed: true,
+    };
+  },
+  watch: {
+    $route(to, from) {
+      this.has_changed = !this.has_changed;
+    },
+  },
+};
 </script>
 
 <style>

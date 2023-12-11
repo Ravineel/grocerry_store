@@ -2,7 +2,7 @@ from main import app
 
 from Application.db import db
 from Application.models import User, Category, Product, Order
-
+from datetime import date
 
 
 with app.app_context():
@@ -14,17 +14,17 @@ with app.app_context():
     
     # Create initial data
     print("Adding initial data...")
-    
+    print(date.fromisoformat('2023-01-01'))
     print("Adding Admin User...")
     admin_user = User(
       
-        password='admin_password',  # Make sure to hash the password in a real-world scenario
+        password='admin_password',  
         email='admin@example.com',
         first_name='Admin',
         last_name='User',
         role=3,
-        account_created_at='2023-01-01',
-        jwt_token=None  # You might want to handle JWT tokens differently
+        account_created_at=date.fromisoformat('2023-01-01'),
+        jwt_token=None 
     )
     print("Adding Manger user.")
     
@@ -35,7 +35,7 @@ with app.app_context():
         first_name='Manager',
         last_name='One',
         role=2,
-        account_created_at='2023-01-02',
+        account_created_at=date.fromisoformat('2023-01-01'),
         jwt_token=None
     )    
     
@@ -49,35 +49,23 @@ with app.app_context():
         first_name='User',
         last_name='One',
         role=1,
-        account_created_at='2023-01-02',
+        account_created_at=date.fromisoformat('2023-01-01'),
         jwt_token=None
     )
 
     normal_user2 = User(
-        
         password='user2_password',
         email='user2@example.com',
         first_name='User',
         last_name='Two',
         role=1,
-        account_created_at='2023-01-03',
+        account_created_at=date.fromisoformat('2023-01-01'),
         jwt_token=None
     )
     
-    print("Adding Guest Users...")
-    guest_user1 = User(
-        
-        password='user3_password',
-        email='user3@example.com',
-        first_name='User',
-        last_name='Guest',
-        role=0,
-        account_created_at='2023-01-03',
-        jwt_token=None
-    )
-
+    
     # Add data to the session
-    db.session.add_all([admin_user, manager_user1, normal_user1, normal_user2, guest_user1])
+    db.session.add_all([admin_user, manager_user1, normal_user1, normal_user2])
 
     
     print("Users added.")

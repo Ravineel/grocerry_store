@@ -41,6 +41,8 @@ const actions = {
 
       const data = await response.json();
 
+      console.log(data);
+
       if (data.success) {
         commit("setToken", data.token);
         commit("setUser", data.user);
@@ -54,7 +56,6 @@ const actions = {
         sessionStorage.setItem("userRole", data.user.role);
         sessionStorage.setItem("isAuthenticated", true);
       } else {
-        sessionStorage.setItem("isAuthenticated", false);
         commit("setErrors", data.error_message);
         commit("setLoading", false);
         console.log(data.error_message);

@@ -62,6 +62,7 @@ export default {
               this.$router.push({ name: "Home" });
               this.$toast.success("Login successful!");
             } else {
+              console.log(this.$store.getters["user/getErrors"]);
               // Handle unsuccessful login, e.g., show an error message
               this.$toast.error(this.$store.getters["user/getErrors"]);
             }

@@ -115,7 +115,7 @@ const actions = {
         return data;
       } else if (status === 401) {
         sessionStorage.removeItem("userToken");
-        sessionStorage.setItem("isAuthenticated", false);
+        sessionStorage.removeItem("isAuthenticated");
         commit("setLoading", false);
 
         if (data.error_code === "TOKEN_EXPIRED") {
@@ -142,6 +142,8 @@ const actions = {
 
   async getRequestCategoryManager({ commit }) {
     commit("setLoading", true);
+    commit("setError", null);
+    commit("requestCategories", []);
     try {
       const response = await fetch(
         "http://localhost:5000/api/v1/category/manager/request/get",
@@ -162,7 +164,7 @@ const actions = {
         return data;
       } else if (status === 401) {
         sessionStorage.removeItem("userToken");
-        sessionStorage.setItem("isAuthenticated", false);
+        sessionStorage.removeItem("isAuthenticated");
         commit("setLoading", false);
 
         if (data.error_code === "TOKEN_EXPIRED") {
@@ -181,13 +183,15 @@ const actions = {
       }
     } catch (err) {
       console.log("An error occured: ", err);
-      commit("setError", err);
+      commit("setError", "SERVER ERROR");
       commit("setLoading", false);
     }
   },
 
   async getRequestCategoryAdmin({ commit }) {
     commit("setLoading", true);
+    commit("setError", null);
+    commit("setRequestCategories", []);
     try {
       const response = await fetch(
         "http://localhost:5000/api/v1/category/request/get/all",
@@ -208,7 +212,7 @@ const actions = {
         return data;
       } else if (status === 401) {
         sessionStorage.removeItem("userToken");
-        sessionStorage.setItem("isAuthenticated", false);
+        sessionStorage.removeItem("isAuthenticated");
         commit("setLoading", false);
 
         if (data.error_code === "TOKEN_EXPIRED") {
@@ -232,7 +236,55 @@ const actions = {
     }
   },
 
-  async approveRequestCategory({ commit }, payload) {},
+  async approveRequestCategory({ commit }, payload) {
+    commit("setLoading", true);
+    commit("setError", null);
+    commit("setRequestCreated", false);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/category/request/approval`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      const status = response.status;
+      const data = await response.json();
+      console.log(data);
+
+      if (status === 200) {
+        commit("setRequestCreated", true);
+        commit("setLoading", false);
+        return data;
+      } else if (status === 401) {
+        sessionStorage.removeItem("userToken");
+        sessionStorage.removeItem("isAuthenticated");
+        commit("setLoading", false);
+
+        if (data.error_code === "TOKEN_EXPIRED") {
+          commit("setError", "Your session has expired. Please login again.");
+        }
+        if (data.error_code === "TOKEN_INVALID") {
+          commit("setError", "Your session is invalid. Please login again.");
+        }
+        if (data.error_code === "INVALID_ROLE") {
+          commit("setError", "You are not authorized to perform this action.");
+        }
+        return data;
+      } else {
+        commit("setLoading", false);
+        commit("setError", data.error_message);
+      }
+    } catch (err) {
+      console.log("An error occured: ", err);
+      commit("setError", err);
+      commit("setLoading", false);
+    }
+  },
 };
 
 // mutations

@@ -40,24 +40,33 @@ class userManagerRole(Resource):
       parser = reqparse.RequestParser()
       parser.add_argument('manager_id', type=int, required=True)
       parser.add_argument('is_manager_active', type=bool, required=True)
+      
       args = parser.parse_args()
+      
       manager_id = args['manager_id']
       is_manager_active = args['is_manager_active']
+      
       manager = User.query.filter_by(id=manager_id).first()
+      
       if not manager:
         raise BusinessValidationError(400, "MANAGER_NOT_FOUND", "Manager not found")
+      
       manager.is_manager_active = is_manager_active
       db.session.commit()
+      
       return make_response(jsonify({
         "success":True,
         "message":"Manager role updated successfully"
         }), 200)
+    
     except BusinessValidationError as e:
       raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
     
 # get user count siguped by month api
+
+
 user_count_list = {
                    
   "user_count": fields.Integer,
@@ -70,28 +79,4 @@ class userCount(Resource):
     @level_required(3)
     @marshal_with(user_count_list)
     def get(current_app,self):
-      try:
-        data = []
-        
-        users =  User.query.all()
-        
-        for user in users:
-          user_count = User.query.filter_by(id=user.id).count()
-          month = user.account_created_at.strftime("%B")
-          year = user.account_created_at.strftime("%Y")
-          data.append({
-            "user_count":user_count,
-            "month":month,
-            "year":year
-            })
-          
-        print(data)
-        
-        if not users:
-          raise BusinessValidationError(400, "USER_NOT_FOUND", "User not found")
-        return data,200
-      except BusinessValidationError as e:
-        raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
-      except Exception as e:
-        raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
-
+      pass

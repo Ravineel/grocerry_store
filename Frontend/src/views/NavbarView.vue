@@ -55,40 +55,25 @@ export default {
 
   data() {
     return {
-      isAuthenticated: false,
-      userRole: null,
-      roles: ["guest", "user", "manager", "admin"],
+      isAuthenticated: sessionStorage.getItem("isAuthenticated"),
+      userRole: sessionStorage.getItem("userRole"),
     };
   },
   computed: {
     showManagerDashboardLink() {
-      return (
-        this.isAuthenticated &&
-        (this.userRole === "admin" || this.userRole === "manager")
-      );
+      return this.isAuthenticated && this.userRole === "2";
     },
     showAdminDashboardLink() {
-      return this.isAuthenticated && this.userRole === "admin";
+      return this.isAuthenticated && this.userRole === "3";
     },
   },
   watch: {
     isAuthenticated(newVal) {
-      // Handle changes in isAuthenticated
       console.log("isAuthenticated changed:", newVal);
     },
     userRole(newVal) {
-      // Handle changes in userRole
       console.log("userRole changed:", newVal);
     },
-  },
-  created() {
-    console.log(sessionStorage.getItem("isAuthenticated"));
-    this.isAuthenticated = sessionStorage.getItem("isAuthenticated");
-    console.log(this.isAuthenticated);
-    const role = sessionStorage.getItem("userRole")
-      ? sessionStorage.getItem("userRole")
-      : 0;
-    this.userRole = this.roles[role];
   },
 };
 </script>

@@ -1,9 +1,11 @@
-from celery import Celery
-from flask import current_app as app
+from celery import Celery, Task
 
-celery = Celery("Application Jobs")
-
-class ContextTask(celery.Task):
-    def __call__(self, *args, **kwargs):
-        with app.app_context():
-            return self.run(*args, **kwargs)
+def celery_init_app(app):
+	class FlaskTask(Task):
+		def __call__(self, *args: object, **kwargs: object) -> object:
+			with app.app_context():
+				return self.run(*args, **kwargs)
+  
+	celery_app = Celery(app.name, task_cls=FlaskTask)
+	celery_app.config_from_object(app.config["CELERY"])
+	return celery_app

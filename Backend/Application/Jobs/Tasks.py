@@ -1,27 +1,15 @@
-from Application.workers import celery
-from celery.schedules import crontab
+
+from celery import shared_task
 from Application.models import *
-from datetime import datetime
+from datetime import datetime, date
 import flask_excel as excel
 from json import dumps
 from httplib2 import Http
 
 
-@celery.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-  sender.add_periodic_task(
-    crontab(minute=2, hour="*", day_of_week='*'),
-    send_user_alert.s(),
-    name='send_user_alert'
-  )  
-  sender.add_periodic_task(
-    crontab(minute=0, hour=0, day_of_month=1, month_of_year='*'),
-    send_user_email.s(),
-    name='send_user_email'
-  )
-  
+ 
 
-@celery.task()
+@shared_task(ignore_result=False)
 def send_user_alert():
   try:
    
@@ -34,13 +22,21 @@ def send_user_alert():
     
     if users:
       for user in users:
-        if user.last_login != datetime.date.today():
+        print(user.last_login)
+        print(date.today())
+        if user.last_login is None:
           msg = "Hi {}, you have not visited the site today, please visit to get the latest Products".format(user.first_name + " " + user.last_name)
+        
+        elif user.last_login != date.today():
+          msg = "Hi {}, you have not visited the site today, please visit to get the latest Products".format(user.first_name + " " + user.last_name)
+        
+        
         else:
+          print(user.orders)
           if not user.orders:
-            msg = "Hi {}, you have not made any purchase yet, please make one to get the latest Products".format(user.first_name + " " + user.last_name)
+            msg = "Hi {}, you have not made any purchase yet, please head to the site to get the latest Products".format(user.first_name + " " + user.last_name)
           elif user.orders[-1].order_date != datetime.date.today():
-            msg = "Hi {}, you have not made any purchase today, please make one to get the latest Products".format(user.first_name + " " + user.last_name)
+            msg = "Hi {}, you have not made any purchase today, please head to the site to get the latest Products".format(user.first_name + " " + user.last_name)
         
         response = http_obj.request(
           uri=url,
@@ -48,14 +44,14 @@ def send_user_alert():
           headers=message_headers,
           body=dumps({"text": msg})
         )  
-        print(response)
+       
   except Exception as e:
     print(e)
     raise e
     
 
 
-@celery.task()
+@shared_task(ignore_result=False)
 def send_user_email():
   pass
 

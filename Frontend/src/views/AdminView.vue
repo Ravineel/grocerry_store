@@ -50,7 +50,7 @@
           <div class="card-body">
             <div class="card-body">
               <div class="card-title text-center">
-                <h1>Requests</h1>
+                <h2>Requests</h2>
               </div>
               <div class="card-text">
                 <h4 class="text-center">
@@ -71,7 +71,7 @@
           <div class="card-body">
             <div class="card-body">
               <div class="card-title text-center">
-                <h1>Categories</h1>
+                <h2>Categories</h2>
               </div>
               <div class="card-text">
                 <h4 class="text-center">
@@ -92,7 +92,7 @@
           <div class="card-body">
             <div class="card-body">
               <div class="card-title text-center">
-                <h1>Products</h1>
+                <h2>Products</h2>
               </div>
               <div class="card-text">
                 <h4 class="text-center">Total Products: {{ totalProduct }}</h4>

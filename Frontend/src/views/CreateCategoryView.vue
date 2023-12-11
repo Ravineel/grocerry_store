@@ -65,7 +65,7 @@ export default {
           .dispatch("categories/createCategoryRequestManager", this.formdata)
           .then((res) => {
             if (this.$store.getters["categories/error"]) {
-              this.$router.push("/manager");
+              this.$router.push({ name: "Manager" });
               this.$toast.error(this.$store.getters["categories/error"]);
             } else {
               this.$router.push({ name: "Manager" });
@@ -77,7 +77,7 @@ export default {
           .dispatch("categories/createCategoryAdmin", this.formdata)
           .then((res) => {
             if (this.$store.getters["categories/error"]) {
-              this.$router.push("/admin");
+              this.$router.push({ name: "Admin" });
               this.$toast.error(this.$store.getters["categories/error"]);
             } else {
               this.$router.push({ name: "Admin" });

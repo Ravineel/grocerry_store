@@ -49,7 +49,7 @@ const actions = {
         console.log("Unauthorized");
 
         sessionStorage.removeItem("userToken");
-        sessionStorage.setItem("isAuthenticated", false);
+        sessionStorage.removeItem("isAuthenticated");
         commit("setLoading", false);
         commit("setCreated", false);
 

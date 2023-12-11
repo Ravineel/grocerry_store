@@ -104,7 +104,7 @@ const actions = {
         return data;
       } else if (status === 401) {
         sessionStorage.removeItem("userToken");
-        sessionStorage.setItem("isAuthenticated", false);
+        sessionStorage.removeItem("isAuthenticated");
         commit("setLoading", false);
         commit("setCreated", false);
 
@@ -158,7 +158,7 @@ const actions = {
         return data;
       } else if (status === 401) {
         sessionStorage.removeItem("userToken");
-        sessionStorage.setItem("isAuthenticated", false);
+        sessionStorage.removeItem("isAuthenticated");
         commit("setLoading", false);
         commit("setCreated", false);
 
@@ -206,7 +206,7 @@ const actions = {
         return data;
       } else if (status === 401) {
         sessionStorage.removeItem("userToken");
-        sessionStorage.setItem("isAuthenticated", false);
+        sessionStorage.removeItem("isAuthenticated");
         commit("setLoading", false);
 
         if (data.error_code === "TOKEN_EXPIRED") {

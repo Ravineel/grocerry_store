@@ -1,6 +1,6 @@
 <template>
   <ag-grid-vue
-    style="width: 100%; height: 400px"
+    style="width: 100%; height: 600px"
     :class="themeClass"
     :columnDefs="columnDefs"
     @grid-ready="onGridReady"
@@ -20,6 +20,7 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
 import StatusRenderer from "@/components/StatusRenderer.vue";
 import TypeRenderer from "@/components/TypeRenderer.vue";
+import ActionsAdminRequest from "@/components/ActionsAdminRequest.vue";
 
 const textfilterParams = {
   filterOptions: [
@@ -68,6 +69,7 @@ export default {
     AgGridVue,
     StatusRenderer,
     TypeRenderer,
+    ActionsAdminRequest,
   },
   data: function () {
     return {
@@ -151,8 +153,8 @@ export default {
       },
 
       {
-        field: "approved_by_name",
-        headerName: "Approved By",
+        field: "requested_by_name",
+        headerName: "Requested By",
         minWidth: 150,
         filter: "agTextColumnFilter",
         filterParams: textfilterParams,
@@ -163,6 +165,15 @@ export default {
         minWidth: 150,
         filter: "agDateColumnFilter",
         filterParams: dateFilterParams,
+      },
+      {
+        headerName: "Actions",
+        minWidth: 250,
+        cellRenderer: ActionsAdminRequest,
+        cellRendererParams: {
+          onApprove: this.onApprove,
+          onReject: this.onReject,
+        },
       },
     ];
 
@@ -179,7 +190,7 @@ export default {
       const updateData = (data) => (this.rowData = data);
 
       this.$store
-        .dispatch("categories/getRequestCategoryManager")
+        .dispatch("categories/getRequestCategoryAdmin")
         .then((data) => {
           if (this.$store.getters["categories/error"]) {
             this.$toast.error(this.$store.getters["categories/error"]);
@@ -194,6 +205,38 @@ export default {
     onSelectionChanged() {
       const selectedRows = this.gridApi.getSelectedRows();
       this.selectedRow = selectedRows[0];
+    },
+    onApprove(param) {
+      const paylod = {
+        category_id: param.id,
+        has_approved: "true",
+      };
+      this.$store
+        .dispatch("categories/approveRequestCategory", paylod)
+        .then((res) => {
+          if (this.$store.getters["categories/error"]) {
+            this.$toast.error(this.$store.getters["categories/error"]);
+          } else {
+            this.$toast.success("Category Approved");
+            this.$router.push({ name: "AdminRequest" });
+          }
+        });
+    },
+    onReject(param) {
+      const paylod = {
+        category_id: param.id,
+        has_approved: "false",
+      };
+      this.$store
+        .dispatch("categories/approveRequestCategory", paylod)
+        .then((res) => {
+          if (this.$store.getters["categories/error"]) {
+            this.$toast.error(this.$store.getters["categories/error"]);
+          } else {
+            this.$toast.success("Category Rejected");
+            this.$router.push({ name: "AdminRequest" });
+          }
+        });
     },
   },
 };

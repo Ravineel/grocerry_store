@@ -4,7 +4,7 @@ from Application.models import Order,Product, User
 from Application.db import db
 from Application.error_handling import BusinessValidationError
 from Application.middleware import level_required
-from datetime import datetime
+from datetime import datetime, date
 import uuid
 
 class CheckoutApi(Resource):
@@ -15,11 +15,13 @@ class CheckoutApi(Resource):
       parser = reqparse.RequestParser()
       parser.add_argument('products', type=dict, action="append", required=True, help="products field is required")
       args = parser.parse_args()
+      
       products = args['products']
+      
       id = str(uuid.uuid4())[:8]
       order_id = "PO-"+id+str(current_user.id)
+      
       for product in products:
-        print(product)
         total = 0
         product_id = product['product_id']
         product_name = product['product_name']
@@ -40,18 +42,19 @@ class CheckoutApi(Resource):
         # Create order
         order = Order(
           order_id=order_id,
-          order_date=datetime.now(),
+          order_date=date.today(),
           user_id=current_user.id,
           product_id=product_id,
           qty=qty,
           rate=rate,
           unit=unit,
           total=total,
-          create_date=datetime.now()
+          last_update_date=date.today()
           )
         
         db.session.add(order)
       db.session.commit()
+      
       return make_response(jsonify({
         "success":True,
         "message":"Order placed successfully",
@@ -158,7 +161,6 @@ class getAllOrdersIdAdminApi(Resource):
   @marshal_with(order_data)
   def get(current_user,self):
     try:
-     
       
       orders = Order.query.group_by(Order.order_id, Order.order_date)\
         .add_columns(
@@ -182,9 +184,6 @@ class getAllOrdersIdAdminApi(Resource):
           "product_count":order.product_count,
           "total":order.total
         })
-      
-       
-       
       
       if not orders:
         raise BusinessValidationError(400, "ORDER_NOT_FOUND", "Order not found")

@@ -5,7 +5,7 @@ from Application.models import User
 from Application.db import db
 from Application.error_handling import BusinessValidationError
 from Application.middleware import level_required
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import jwt
 
 login_parser = reqparse.RequestParser()
@@ -22,16 +22,23 @@ class Login(Resource):
        
 
       user = User.query.filter_by(email=args['email']).first()
-      user_role = user.role
+      
+      print(user)
+      
+      if user:
+        user_role = user.role
       
       if not user:
+        print("User not found")
         raise BusinessValidationError(404, "USER_NOT_FOUND", "User not found")      
 
       if not check_password_hash(user.password_hash, args['password']):
+        print("Invalid password")
         raise BusinessValidationError(403, "INVALID_PASSWORD_USERNAME", "Invalid password or USERNAME")
 
-      if user_role == 2:
+      if  user and user_role == 2:
         if not user.is_manager_active:
+          [print("Manager is not active")]
           raise BusinessValidationError(403, "MANAGER_NOT_ACTIVE", "Manager is not active")
 
 
@@ -40,10 +47,14 @@ class Login(Resource):
           'role': user.role,
           'email': user.email,
           'user_id': user.id,
-          'exp': datetime.utcnow() + timedelta(minutes=30)
+          'exp': datetime.utcnow() + timedelta(minutes=60)
       }, app.config['SECRET_KEY'])
 
       user.jwt_token = token
+      
+      user.last_login = date.today()
+      
+      
       db.session.commit()
 
       response_data = {
@@ -56,6 +67,7 @@ class Login(Resource):
           },
           'token': token
       }
+      print(response_data)
 
       return make_response(jsonify(response_data), 200)
     except BusinessValidationError as e:
@@ -129,7 +141,7 @@ class SignUp(Resource):
         first_name=args['first_name'],
         last_name=args['last_name'],
         role=role,
-        account_created_at=datetime.now()
+        account_created_at=date.today()
       )
     
       db.session.add(new_user)

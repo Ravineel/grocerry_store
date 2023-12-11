@@ -5,7 +5,7 @@ from Application.models import User, Category, CategoryRequest
 from Application.db import db
 from Application.error_handling import BusinessValidationError
 from Application.middleware import level_required
-from datetime import datetime, timedelta
+from datetime import date
 
 
 
@@ -16,11 +16,11 @@ category_request_fields = {
   'type': fields.String,
   'request_status': fields.String,
   'request_by': fields.Integer,
-  'create_date': fields.DateTime(dt_format='rfc822'),
-  'last_update_date': fields.DateTime(dt_format='rfc822'),
+  'create_date': fields.DateTime,
+  'last_update_date': fields.DateTime,
   'id': fields.Integer,
   'approved_by': fields.Integer,
-  'approved_date': fields.DateTime(dt_format='rfc822'),
+  'approved_date': fields.DateTime,
   'approved_by_name': fields.String,
   
 }
@@ -32,11 +32,9 @@ class RequestCategoryRequestByManagerAPI(Resource):
   @marshal_with(category_request_fields)
   def get(current_user, self):
     try:
-      
-      
+          
       user_id = current_user.id
 
-      
       category_requests = CategoryRequest.query.outerjoin(User, CategoryRequest.approved_by == User.id)\
         .add_columns(
           CategoryRequest.category_id,CategoryRequest.category_name, CategoryRequest.description, CategoryRequest.type, 
@@ -60,12 +58,14 @@ class RequestCategoryRequestByManagerAPI(Resource):
       parser.add_argument('description', type=str, required=True)
       parser.add_argument('type', type=str, required=True)
       args = parser.parse_args()
+      
       category_name = args['category_name']
       description = args['description']
       type = args['type']
       created_by = current_user.id
       
       category = Category.query.filter_by(category_name=category_name).first()
+      
       if category and type == "CREATE":
         raise BusinessValidationError(400, "CATEGORY_ALREADY_EXISTS", "Category already exists!")
       
@@ -76,12 +76,13 @@ class RequestCategoryRequestByManagerAPI(Resource):
         raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
       
       if not category and type == "CREATE":
-        category_request = CategoryRequest(category_name=category_name, description=description, type=type, request_status="PENDING", request_by=created_by)
+        category_request = CategoryRequest(category_name=category_name, description=description, type=type, request_status="PENDING", request_by=created_by,create_date=date.today(), last_update_date=date.today())
       else:
-         category_request = CategoryRequest(category_id=args['category_id'], category_name=category_name, description=description, type=type, request_status="PENDING", request_by=created_by)
+         category_request = CategoryRequest(category_id=args['category_id'], category_name=category_name, description=description, type=type, request_status="PENDING", request_by=created_by,create_date=date.today(), last_update_date=date.today())
       
       db.session.add(category_request)
       db.session.commit()
+      
       return {"message": "Category request created successfully!", "success":"true"}, 200
     except BusinessValidationError as e:
       raise BusinessValidationError(e.status_code, e.error_code, e.error_message)

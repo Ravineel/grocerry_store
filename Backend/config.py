@@ -10,16 +10,19 @@ class Config():
     DEBUG=FALSE
     SQLITE_DB_DIR=None
     SQLALCHEMY_DATABASE_URI = None
-    CELERY_BROKER_URL = 'redis://localhost:6379/1'
-    CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'
+    CACHE_TYPE = "RedisCache"
+    CACHE_REDIS_HOST = "localhost"
+    CACHE_REDIS_PORT = 6379
+    CACHE_REDIS_DB = 3
+    
+
 
 class LocalDevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///../database/db.sqlite3'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=10)
-    CELERY_BROKER_URL = 'redis://localhost:6379/1'
-    CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'
+
 
 class SMTPConfig():
     SMPTP_SERVER_HOST = "localhost"

@@ -1,13 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/DashboardView.vue";
-import LoginView from "../views/LoginView.vue";
-import AdminView from "../views/AdminView.vue";
-import CartView from "../views/CartView.vue";
-import ManagerView from "../views/ManagerView.vue";
-import ProductCreateView from "../views/CreateProductView.vue";
-import ProductEditView from "../views/EditProductView.vue";
-import CategoryCreateView from "../views/CreateCategoryView.vue";
-import EditCategoryView from "../views/EditCategoryView.vue";
+import HomeView from "@/views/DashboardView.vue";
+import LoginView from "@/views/LoginView.vue";
+import AdminView from "@/views/AdminView.vue";
+import CartView from "@/views/CartView.vue";
+import ManagerView from "@/views/ManagerView.vue";
+import ProductCreateView from "@/views/CreateProductView.vue";
+import ProductEditView from "@/views/EditProductView.vue";
+import CategoryCreateView from "@/views/CreateCategoryView.vue";
+import EditCategoryView from "@/views/EditCategoryView.vue";
+import AdminRequestView from "@/views/AdminRequestsView.vue";
+
 import { useToast } from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-default.css";
 
@@ -92,6 +94,15 @@ const router = createRouter({
         requiresRole: ["manager", "admin"],
       },
     },
+    {
+      path: "/admin/request",
+      name: "AdminRequest",
+      component: AdminRequestView,
+      meta: {
+        requiresAuth: true,
+        requiresRole: ["admin"],
+      },
+    },
   ],
 });
 
@@ -111,9 +122,11 @@ router.beforeEach((to, from, next) => {
 
   // User is not logged in and trying to access a protected route
   if (!isAuthorized && authRequired) {
+    print("here");
     next({ name: "Login" });
     $toast.error("Please log in to access this page!");
   }
+
   // User is logged in but doesn't have the required role
   else if (
     isAuthorized &&
@@ -124,18 +137,17 @@ router.beforeEach((to, from, next) => {
     next(false);
     $toast.error("You don't have permission to access this page!");
   }
+
   // User is logged in and trying to access a public page
   else if (isAuthorized && to.name == "Login") {
     next(false);
     $toast.info("You are already logged in!");
   }
+
   // User clicks logout, clear session storage and redirect to login
   else if (to.name == "Logout") {
-    // Clear session storage
     sessionStorage.clear();
-    // Set isAuthenticated to false
-    sessionStorage.setItem("isAuthenticated", false);
-    // Redirect to the login page
+
     next({ name: "Login" });
     $toast.info("You have been logged out!");
   } else {

@@ -5,7 +5,7 @@ from Application.models import User, Category, CategoryRequest
 from Application.db import db
 from Application.error_handling import BusinessValidationError, TokenExpiredError, TokenInvalidError, InsufficientLevelError
 from Application.middleware import level_required
-from datetime import datetime, timedelta
+from datetime import date
 from sqlalchemy.orm import aliased
 
 
@@ -28,10 +28,10 @@ class CategoryGeneralAPI(Resource):
       return categories, 200
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
+     
         
 class CategoryByIdAPI(Resource):
-    
-    
+  
     @marshal_with(category_fields)
     def get(self, category_id):
       try:
@@ -44,6 +44,7 @@ class CategoryByIdAPI(Resource):
       except Exception as e:
         raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
 
+
 class CategoryAdminAPI(Resource):
   
   @level_required(3)
@@ -53,16 +54,20 @@ class CategoryAdminAPI(Resource):
       parser.add_argument('category_name', type=str, required=True)
       parser.add_argument('description', type=str, required=True)
       args = parser.parse_args()
+      
       category_name = args['category_name']
       description = args['description']
       created_by = current_user.id
       
       category = Category.query.filter_by(category_name=category_name).first()
+      
       if category:
         raise BusinessValidationError(400, "CATEGORY_ALREADY_EXISTS", "Category already exists!")
-      category = Category(category_name=category_name, description=description, create_by=created_by, last_update_by=created_by)
+      
+      category = Category(category_name=category_name, description=description, create_by=created_by, last_update_by=created_by, create_date=date.today(), last_update_date=date.today())
       db.session.add(category)
       db.session.commit()
+      
       return {"message": "Category created successfully!"}, 200
     except BusinessValidationError as e:
       raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
@@ -78,18 +83,24 @@ class CategoryAdminAPI(Resource):
       parser.add_argument('category_name', type=str, required=True)
       parser.add_argument('description', type=str, required=True)
       args = parser.parse_args()
+      
       category_id = args['category_id']
       category_name = args['category_name']
       description = args['description']
       updated_by = current_user.id
+      
       category = Category.query.filter_by(category_id=category_id).first()
+      
       if not category:
         raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
+      
       category.category_name = category_name
       category.description = description
       category.last_update_by = updated_by
-      category.last_update_date = datetime.now()
+      category.last_update_date = date.today()
+      
       db.session.commit()
+      
       return {"message": "Category updated successfully!"}, 200
     except BusinessValidationError as e:
       raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
@@ -102,12 +113,17 @@ class CategoryAdminAPI(Resource):
       parser = reqparse.RequestParser()
       parser.add_argument('category_id', type=int, required=True)
       args = parser.parse_args()
+      
       category_id = args['category_id']
+      
       category = Category.query.filter_by(category_id=category_id).first()
+      
       if not category:
         raise BusinessValidationError(400, "CATEGORY_NOT_FOUND", "Category not found!")
+      
       db.session.delete(category)
       db.session.commit()
+      
       return {"message": "Category deleted successfully!"}, 200
     except BusinessValidationError as e:
       raise BusinessValidationError(e.status_code, e.error_code, e.error_message)
@@ -125,6 +141,7 @@ category_request_fields={
   'request_by': fields.Integer,
   'request_date': fields.DateTime,
   'request_status': fields.String,
+  'create_date': fields.DateTime,
   'type': fields.String,
   'approved_by': fields.Integer,
   'approved_date': fields.DateTime,
@@ -141,9 +158,10 @@ class CategoryRequestAPI(Resource):
   @marshal_with(category_request_fields)
   def get(current_user, self):
     try:
-      
+      print("here 1")
       user_approved_by = aliased(User)
       user_requested_by = aliased(User)
+      print("here 2")
       
       category_requests = CategoryRequest.query.outerjoin(user_approved_by, CategoryRequest.approved_by == user_approved_by.id) \
       .outerjoin(user_requested_by, CategoryRequest.request_by == user_requested_by.id) \
@@ -154,9 +172,12 @@ class CategoryRequestAPI(Resource):
           CategoryRequest.approved_by, CategoryRequest.approved_date, 
           (user_approved_by.first_name + ' ' + user_approved_by.last_name).label('approved_by_name'),
           (user_requested_by.first_name + ' ' + user_requested_by.last_name).label('requested_by_name')
-      ) \
+      )\
       .all()
-    
+      
+      print(category_requests)
+      
+      print("here 3")
       
       return category_requests, 200
     except Exception as e:
@@ -171,13 +192,13 @@ class CategoryRequestAPI(Resource):
       parser.add_argument('category_id', type=str, required=True)
       parser.add_argument('has_approved', type=str, required=True)
       args = parser.parse_args()
+      
       category_id = args['category_id']
       approval = args['has_approved']
-   
       approved_by = current_user.id
-      approved_date = datetime.now()
+      approved_date = date.today()
       
-      category_request = CategoryRequest.query.filter_by(category_id=category_id).first()
+      category_request = CategoryRequest.query.filter_by(id=category_id).first()
      
       if not category_request:
         raise BusinessValidationError(404, "CATEGORY_REQUEST_NOT_FOUND", "Category request not found!")
@@ -186,18 +207,19 @@ class CategoryRequestAPI(Resource):
         category_request.request_status = "REJECTED"
         category_request.approved_by = approved_by
         category_request.approved_date = approved_date
-        category_request.last_update_date = datetime.now()
+        category_request.last_update_date = date.today()
         db.session.commit()
         return {"message": "Category request rejected successfully!"}, 200
+      
       elif approval == "true":
         category_request.request_status = "APPROVED"
         category_request.approved_by = approved_by
         category_request.approved_date = approved_date
-        category_request.last_update_date = datetime.now()
+        category_request.last_update_date = date.today()
         db.session.commit()
         
         if category_request.type == "CREATE":
-          category = Category(category_name=category_request.category_name, description=category_request.description, create_by=category_request.request_by, last_update_by=category_request.approved_by)
+          category = Category(category_name=category_request.category_name, description=category_request.description, create_by=category_request.request_by, last_update_by=category_request.approved_by, create_date=date.today(),last_update_date=date.today())
           db.session.add(category)
           db.session.commit()
         
@@ -208,7 +230,7 @@ class CategoryRequestAPI(Resource):
           category.category_name = category_request.category_name
           category.description = category_request.description
           category.last_update_by = category_request.request_by
-          category.last_update_date = datetime.now()
+          category.last_update_date = date.today()
           db.session.commit() 
           
         elif category_request.type == "DELETE":
