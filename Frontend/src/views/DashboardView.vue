@@ -33,6 +33,7 @@
       </div>
       <div class="col-12 col-sm-6 col-md-3 mb-3">
         <select class="form-select" v-model="sortOption">
+          <!-- <option value="qty">Sort by Quantity</option> -->
           <option value="name">Sort by Name</option>
           <option value="price">Sort by Price</option>
           <option value="mfg_date">Sort by Manufacturing Date</option>
@@ -56,6 +57,8 @@
             <p class="card-text">
               Price per {{ product.unit }}: ₹{{ product.rate.toFixed(2) }}
             </p>
+            <p class="card-text">Manufacturer: {{ product.manufacturer }}</p>
+            <p class="card-text">Manufacturing Date: {{ product.mfg_date }}</p>
             <p class="card-text">
               Availability:
               <span class="fw-bold text-success" v-if="product.qty > 0">
@@ -103,7 +106,7 @@ export default {
       showCartModal: false,
       cart: [],
       searchQuery: "",
-      sortOption: "name",
+      sortOption: "qty",
       searchCategory: "",
       searchMfg: "",
     };
@@ -124,7 +127,9 @@ export default {
               .includes(this.searchCategory.toLowerCase())
         )
         .sort((a, b) => {
-          if (this.sortOption === "name") {
+          if (this.sortOption === "qty") {
+            return b.qty - a.qty;
+          } else if (this.sortOption === "name") {
             return a.product_name.localeCompare(b.product_name);
           } else if (this.sortOption === "price") {
             return a.rate - b.rate;

@@ -1,6 +1,6 @@
-from flask import current_app as app, jsonify, make_response
+from flask import current_app as app
 from flask_restful import Resource, reqparse,marshal_with, fields
-from werkzeug.security import check_password_hash
+from sqlalchemy import func
 from Application.models import User, Category, CategoryRequest
 from Application.db import db
 from Application.error_handling import BusinessValidationError, TokenExpiredError, TokenInvalidError, InsufficientLevelError
@@ -141,10 +141,10 @@ category_request_fields={
   'request_by': fields.Integer,
   'request_date': fields.DateTime,
   'request_status': fields.String,
-  'create_date': fields.DateTime,
+  'create_date': fields.String,
   'type': fields.String,
   'approved_by': fields.Integer,
-  'approved_date': fields.DateTime,
+  'approved_date': fields.String,
   'last_update_by': fields.Integer,
   'last_update_date': fields.DateTime,
   'approved_by_name': fields.String,
@@ -168,8 +168,8 @@ class CategoryRequestAPI(Resource):
       .add_columns(
           CategoryRequest.category_id, CategoryRequest.category_name, CategoryRequest.description, 
           CategoryRequest.type, CategoryRequest.request_status, CategoryRequest.request_by, 
-          CategoryRequest.create_date, CategoryRequest.last_update_date, CategoryRequest.id, 
-          CategoryRequest.approved_by, CategoryRequest.approved_date, 
+          func.date(CategoryRequest.create_date).label('create_date'), CategoryRequest.last_update_date, CategoryRequest.id, 
+          CategoryRequest.approved_by,  func.date(CategoryRequest.approved_date).label('approved_date'), 
           (user_approved_by.first_name + ' ' + user_approved_by.last_name).label('approved_by_name'),
           (user_requested_by.first_name + ' ' + user_requested_by.last_name).label('requested_by_name')
       )\

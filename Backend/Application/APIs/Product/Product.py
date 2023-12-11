@@ -5,7 +5,7 @@ from Application.db import db
 from Application.error_handling import BusinessValidationError
 from Application.middleware import level_required
 from datetime import datetime,date
-
+from sqlalchemy import desc, func
 
 
 Product_fields = {
@@ -19,7 +19,7 @@ Product_fields = {
   'rate': fields.Float,
   'unit': fields.String,
   'manufacturer': fields.String,
-  'mfg_date': fields.DateTime,
+  'mfg_date': fields.String,
 }
 
 class ProductGeneralAPI(Resource):
@@ -34,8 +34,8 @@ class ProductGeneralAPI(Resource):
           Product.product_id, Product.product_name, Product.description, 
           Product.create_date, Product.category_id, Category.category_name, 
           Product.qty, Product.rate, Product.unit,  
-          Product.manufacturer, Product.mfg_date)\
-        .order_by(Product.qty.desc())\
+          Product.manufacturer, func.date(Product.mfg_date).label('mfg_date'))\
+        .order_by(desc(Product.qty))\
         .all()
 
       return products, 200

@@ -1,11 +1,11 @@
-from flask import current_app as app, jsonify, make_response
+from flask import current_app as app
 from flask_restful import Resource, reqparse,marshal_with, fields
-from werkzeug.security import check_password_hash
 from Application.models import User, Category, CategoryRequest
 from Application.db import db
 from Application.error_handling import BusinessValidationError
 from Application.middleware import level_required
 from datetime import date
+from sqlalchemy import func
 
 
 
@@ -16,11 +16,11 @@ category_request_fields = {
   'type': fields.String,
   'request_status': fields.String,
   'request_by': fields.Integer,
-  'create_date': fields.DateTime,
+  'create_date': fields.String,
   'last_update_date': fields.DateTime,
   'id': fields.Integer,
   'approved_by': fields.Integer,
-  'approved_date': fields.DateTime,
+  'approved_date': fields.String,
   'approved_by_name': fields.String,
   
 }
@@ -38,9 +38,9 @@ class RequestCategoryRequestByManagerAPI(Resource):
       category_requests = CategoryRequest.query.outerjoin(User, CategoryRequest.approved_by == User.id)\
         .add_columns(
           CategoryRequest.category_id,CategoryRequest.category_name, CategoryRequest.description, CategoryRequest.type, 
-          CategoryRequest.request_status, CategoryRequest.request_by, CategoryRequest.create_date, 
+          CategoryRequest.request_status, CategoryRequest.request_by, func.date(CategoryRequest.create_date).label('create_date'), 
           CategoryRequest.last_update_date, CategoryRequest.id, CategoryRequest.approved_by, 
-          CategoryRequest.approved_date, (User.first_name + ' ' + User.last_name).label('approved_by_name'))\
+          func.date(CategoryRequest.approved_date).label('approved_date'), (User.first_name + ' ' + User.last_name).label('approved_by_name'))\
         .filter(CategoryRequest.request_by==user_id)\
         .all()        
 
