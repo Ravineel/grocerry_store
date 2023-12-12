@@ -7,7 +7,7 @@ from Application.error_handling import BusinessValidationError, TokenExpiredErro
 from Application.middleware import level_required
 from datetime import date
 from sqlalchemy.orm import aliased
-
+from Application.cache_instance import cache
 
 
 
@@ -22,6 +22,7 @@ category_fields = {
 class CategoryGeneralAPI(Resource):
   
   @marshal_with(category_fields)
+  @cache.cached(timeout=50)
   def get(self):
     try:
       categories = Category.query.all()

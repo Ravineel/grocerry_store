@@ -69,23 +69,25 @@ export default {
           labels: ["Total Manager", "Active Manager", "Inactive Manager"],
           datasets: [
             {
-              label: "Manager",
-              backgroundColor: [
-                "rgba(255, 206, 86, 0.2)",
-                "rgba(75, 192, 192, 0.2)",
-                "rgba(255, 99, 132, 0.2)",
-              ],
-              borderColor: [
-                "rgba(255, 206, 86, 1)",
-                "rgba(75, 192, 192, 1)",
-                "rgba(255, 99, 132, 1)",
-              ],
+              label: "Total Manager",
+              backgroundColor: ["rgba(255, 206, 86, 0.2)"],
+              borderColor: ["rgba(255, 206, 86, 1)"],
               borderWidth: 1,
-              data: [
-                data.total_managers_count,
-                data.active_managers_count,
-                data.inactive_managers_count,
-              ],
+              data: [data.total_managers_count, 0, 0],
+            },
+            {
+              label: "Active Manager",
+              backgroundColor: ["rgba(75, 192, 192, 0.2)"],
+              borderColor: ["rgba(75, 192, 192, 1)"],
+              borderWidth: 1,
+              data: [0, data.active_managers_count, 0],
+            },
+            {
+              label: "Inactive Manager",
+              backgroundColor: ["rgba(255, 99, 132, 0.2)"],
+              borderColor: ["rgba(255, 99, 132, 1)"],
+              borderWidth: 1,
+              data: [0, 0, data.inactive_managers_count],
             },
           ],
         };

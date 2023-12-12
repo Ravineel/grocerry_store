@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>User Report</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS v5.2.1 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f8f9fa;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .container-fluid {
+      min-height: 100vh;
+      padding: 30px;
+    }
+
+    .card {
+      margin-top: 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #007bff;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+
+    .card-title {
+      color: #28a745;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .card-text {
+      color: #6c757d;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+
+    .section-title {
+      color: #007bff;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    /* Additional Styling for Card Body */
+    .card-body {
+      background-color: #fff;
+      padding: 10px;
+    }
+  </style>
+
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12 text-center">
+          <h1>Monthly Report for {{ current_month }}-{{ current_year }}</h1>
+        </div>
+      </div>
+
+      <div class="row d-flex justify-content-center">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h2 class="card-title text-center">
+                Hi, {{ user['first_name'] }} {{ user['last_name'] }}
+              </h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row d-flex justify-content-center">
+        <div class="col-12 col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <div class="section-title">Order Summary</div>
+              <ul>
+                <li>Total Orders: {{ total_orders }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row d-flex justify-content-center">
+        <div class="col-12 col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <div class="section-title">Expense Summary</div>
+              <ul>
+                <li>Total Expense: ₹{{ "{:,.2f}".format(total_expense) }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row d-flex justify-content-center">
+        <div class="col-12 col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <div class="section-title">Most Frequently Bought Product</div>
+              <ul>
+                <li>Product Name: {{ frequent_product['product_name'] }}</li>
+                <li>Frequency: {{ frequency }} times</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row d-flex justify-content-center">
+        <div class="col-12 col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <div class="section-title">Most Bought Product</div>
+              <ul>
+                <li>Product Name: {{ most_bought_product['product_name'] }}</li>
+                <li>Quantity: {{ product_bought_qty }} units</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+      integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+      crossorigin="anonymous"
+    ></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
+      integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

@@ -37,8 +37,11 @@
               <h4>Products Table</h4>
             </div>
             <div class="card-text mb-2">
-              <button class="btn btn-primary" @click="onClickCreateProduct">
+              <button class="btn btn-primary m-1" @click="onClickCreateProduct">
                 Create Product
+              </button>
+              <button class="btn btn-info m-1" @click="onClickDownlaodReport">
+                Downlaod Report
               </button>
             </div>
             <div class="card-text">
@@ -69,6 +72,30 @@ export default {
     },
     onClickCreateCategory() {
       this.$router.push("/category/create");
+    },
+    async onClickDownlaodReport() {
+      const res = await fetch(
+        "http://0.0.0.0:5000/api/v1/manager/get/product_report"
+      );
+      const data = await res.json();
+
+      if (res.ok) {
+        this.$toast.success("Report has been triggered successfully");
+
+        const task_id = data.task_id;
+        console.log(task_id);
+
+        const interval = setInterval(async () => {
+          const csv_res = await fetch(
+            `http://0.0.0.0:5000/api/v1/manager/get/csv_report/${task_id}`
+          );
+          if (csv_res.ok) {
+            this.$toast.success("Report will download now");
+            clearInterval(interval);
+            window.location.href = `http://0.0.0.0:5000/api/v1/manager/get/csv_report/${task_id}`;
+          }
+        }, 5000);
+      }
     },
   },
 };

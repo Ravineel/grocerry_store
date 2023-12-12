@@ -152,7 +152,6 @@ router.beforeEach((to, from, next) => {
 
   // User is not logged in and trying to access a protected route
   if (!isAuthorized && authRequired) {
-    print("here");
     next({ name: "Login" });
     $toast.error("Please log in to access this page!");
   }

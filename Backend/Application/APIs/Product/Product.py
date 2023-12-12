@@ -6,6 +6,9 @@ from Application.error_handling import BusinessValidationError
 from Application.middleware import level_required
 from datetime import datetime,date
 from sqlalchemy import desc, func
+from Application.Jobs.Tasks import product_excel
+from celery.result import AsyncResult
+from flask import send_file
 
 
 Product_fields = {
@@ -169,4 +172,32 @@ class ProductManagerAPI(Resource): #create, update, delete product
     except Exception as e:
       raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
     
-  
+
+
+class ProductReport(Resource):
+  # @level_required(2)
+  def get(self):
+    try:
+      res = product_excel.delay() 
+      
+      return jsonify({"success":"true", "task_id":res.id})
+    except Exception as e:
+      raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))
+
+
+class GetCsvReport(Resource):
+  def get(self,task_id):
+    try:
+      print("print task",task_id)
+      
+      res = AsyncResult(task_id)
+      print("res",res)
+      
+      if res.ready():
+        filename = res.result
+        return send_file(filename,as_attachment=True)
+      else:
+        print("res not ready")
+        return jsonify({"success":"false", "message":"Task is not ready yet"}), 404
+    except Exception as e:
+      raise BusinessValidationError(500, "INTERNAL_SERVER_ERROR", str(e))

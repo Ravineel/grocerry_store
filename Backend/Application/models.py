@@ -64,7 +64,7 @@ class Product(db.Model):
   last_update_date = db.Column(db.DateTime)
   create_by = db.Column(db.Integer, db.ForeignKey('user.id'))
   last_update_by = db.Column(db.Integer, db.ForeignKey('user.id'))
-  product_orders = db.relationship('Order', backref='product', lazy=True, cascade='all, delete-orphan')
+  
   
 
 class Order(db.Model):
@@ -79,7 +79,7 @@ class Order(db.Model):
   unit = db.Column(db.String(50), nullable=False)
   total = db.Column(db.Float, nullable=False)
   last_update_date = db.Column(db.DateTime)
-
+  product_detail = db.relationship('Product', backref='order', lazy=True)
 
 
 class CategoryRequest(db.Model):

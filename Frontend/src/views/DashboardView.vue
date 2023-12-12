@@ -58,7 +58,7 @@
               Price per {{ product.unit }}: ₹{{ product.rate.toFixed(2) }}
             </p>
             <p class="card-text">Manufacturer: {{ product.manufacturer }}</p>
-            <p class="card-text">Manufacturing Date: {{ product.mfg_date }}</p>
+            <p class="card-text">Manufacturing Date: {{ product.mfg_date}}</p>
             <p class="card-text">
               Availability:
               <span class="fw-bold text-success" v-if="product.qty > 0">

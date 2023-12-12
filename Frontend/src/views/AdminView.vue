@@ -33,10 +33,8 @@
         <div class="card card-man">
           <div class="card-body">
             <div class="card-body">
-              <div class="card-title text-center">
+              <div class="card-title text-center d-flex justify-content-around">
                 <h1>Store Managers</h1>
-              </div>
-              <div class="card-subtitle m-1">
                 <router-link to="/admin/manager">
                   <button class="btn btn-primary">View Managers</button>
                 </router-link>
@@ -180,7 +178,7 @@ export default {
 
 .card-man,
 .card-user {
-  min-height: 400px !important;
+  min-height: 450px !important;
 }
 
 .btn-outline-primary {

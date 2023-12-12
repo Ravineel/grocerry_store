@@ -1,13 +1,13 @@
 from flask import Flask
 from flask_cors import CORS
-from config import LocalDevelopmentConfig
+from Application.config import LocalDevelopmentConfig
 from Application.db import db
 from Application.workers import celery_init_app
 from Application.Jobs.Tasks import send_user_alert, send_user_email
 from flask_restful import Api
 import flask_excel as excel
 from celery.schedules import crontab
-
+from Application.cache_instance import cache 
 
 import os
 
@@ -17,7 +17,7 @@ app = None
 api = None
 
 def create_app():
-  app = Flask(__name__, template_folder='Template', static_folder='static')
+  app = Flask(__name__, template_folder='templates', static_folder='static')
   
   CORS(app)
   app.config.from_object(LocalDevelopmentConfig)
@@ -26,6 +26,7 @@ def create_app():
   api = Api(app)
   api.init_app(app)
   excel.init_excel(app)
+  cache.init_app(app)
   app.app_context().push()
   app.config.from_mapping(
     CELERY=dict(
@@ -47,12 +48,12 @@ celery_app = celery_init_app(app)
 @celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
   sender.add_periodic_task(
-    crontab(minute='*', hour="*", day_of_week='*'),
+    crontab(minute=30, hour=18, day_of_week='*'),
     send_user_alert.s(),
     name='send_user_alert'
   )  
   sender.add_periodic_task(
-    crontab(minute=30, hour=17, day_of_month=1, month_of_year='*'),
+   crontab(minute=30, hour=18, day_of_month=12,month_of_year='*'),
     send_user_email.s(),
     name='send_user_email'
   )
@@ -65,7 +66,7 @@ from Application.APIs.User.LoginLogoutSignUp import Login, Logout, SignUp
 from Application.APIs.User.User import userManagerRole, managerData,dataCount
 from Application.APIs.Category.Category import CategoryGeneralAPI, CategoryAdminAPI, CategoryByIdAPI,CategoryRequestAPI
 from Application.APIs.Category.CategoryManager import RequestCategoryRequestByManagerAPI
-from Application.APIs.Product.Product import ProductGeneralAPI, ProductByIdAPI, ProductManagerAPI
+from Application.APIs.Product.Product import ProductGeneralAPI, ProductByIdAPI, ProductManagerAPI, ProductReport, GetCsvReport
 from Application.APIs.Order.Order import CheckoutApi, getAllOrdersIdUserApi, getUserOrdersApi, getAllOrdersIdAdminApi
 
 
@@ -121,6 +122,14 @@ api.add_resource(managerData, '/api/v1/admin/get/manager_data')
 
 #
 api.add_resource(dataCount, '/api/v1/admin/get/data_count')
+
+#
+api.add_resource(ProductReport, '/api/v1/manager/get/product_report')
+
+#
+api.add_resource(GetCsvReport, '/api/v1/manager/get/csv_report/<string:task_id>')
+
+
 
 if __name__ == "__main__":
   app.run(debug=True, host='0.0.0.0', port=5000)
