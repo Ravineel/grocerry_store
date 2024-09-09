@@ -8,6 +8,7 @@
 <script>
 import { RouterView } from "vue-router";
 import Navbar from "@/views/NavbarView.vue";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default {
   name: "App",
