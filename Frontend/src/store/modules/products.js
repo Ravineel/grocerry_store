@@ -1,3 +1,5 @@
+import { API_ENDPOINTS } from "@/constants/api";
+
 // initial state
 const state = () => ({
   products: [],
@@ -21,7 +23,7 @@ const actions = {
     commit("setLoading", true);
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/product/get/all",
+        `${import.meta.env.VITE_API_BASE_URL}${API_ENDPOINTS.PRODUCT.GET_ALL}`,
         {
           method: "GET",
           headers: {
@@ -51,7 +53,9 @@ const actions = {
     commit("setLoading", true);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/product/get/${payload}`,
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.PRODUCT.GET_BY_ID
+        }/${payload}`,
         {
           method: "GET",
           headers: {
@@ -84,7 +88,7 @@ const actions = {
     try {
       console.log("payload: ", payload);
       const response = await fetch(
-        "http://localhost:5000/api/v1/product/create",
+        `${import.meta.env.VITE_API_BASE_URL}${API_ENDPOINTS.PRODUCT.CREATE}`,
         {
           method: "POST",
           headers: {
@@ -137,7 +141,7 @@ const actions = {
     try {
       console.log("payload: ", payload);
       const response = await fetch(
-        "http://localhost:5000/api/v1/product/update",
+        `${import.meta.env.VITE_API_BASE_URL}${API_ENDPOINTS.PRODUCT.UPDATE}`,
         {
           method: "PATCH",
           headers: {
@@ -188,7 +192,7 @@ const actions = {
     commit("setLoading", true);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/product/delete`,
+        `${import.meta.env.VITE_API_BASE_URL}${API_ENDPOINTS.PRODUCT.DELETE}`,
         {
           method: "DELETE",
           headers: {

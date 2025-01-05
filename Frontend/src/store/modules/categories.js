@@ -1,3 +1,5 @@
+import { API_ENDPOINTS } from "@/constants/api";
+
 // initial state
 const state = () => ({
   categories: [],
@@ -29,7 +31,7 @@ const actions = {
     commit("setLoading", true);
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/category/get/all",
+        `${import.meta.env.VITE_API_BASE_URL}${API_ENDPOINTS.CATEGORY.GET_ALL}`,
         {
           method: "GET",
           headers: {
@@ -59,7 +61,9 @@ const actions = {
     commit("setLoading", true);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/category/get/${payload}`,
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.CATEGORY.GET_BY_ID
+        }/${payload}`,
         {
           method: "GET",
           headers: {
@@ -94,7 +98,9 @@ const actions = {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/category/admin/create",
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.CATEGORY.ADMIN.CREATE
+        }`,
         {
           method: "POST",
           headers: {
@@ -144,7 +150,9 @@ const actions = {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/category/admin/update",
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.CATEGORY.ADMIN.UPDATE
+        }`,
         {
           method: "PATCH",
           headers: {
@@ -193,7 +201,9 @@ const actions = {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/category/admin/delete",
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.CATEGORY.ADMIN.DELETE
+        }`,
         {
           method: "DELETE",
           headers: {
@@ -242,7 +252,9 @@ const actions = {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/category/manager/request/create",
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.CATEGORY.MANAGER.CREATE_REQUEST
+        }`,
         {
           method: "POST",
           headers: {
@@ -292,7 +304,9 @@ const actions = {
     commit("requestCategories", []);
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/category/manager/request/get",
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.CATEGORY.MANAGER.GET_REQUEST
+        }`,
         {
           method: "GET",
           headers: {
@@ -340,7 +354,9 @@ const actions = {
     commit("setRequestCategories", []);
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/category/request/get/all",
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.CATEGORY.REQUEST.GET_ALL
+        }`,
         {
           method: "GET",
           headers: {
@@ -388,7 +404,9 @@ const actions = {
     commit("setRequestCreated", false);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/category/request/approval`,
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.CATEGORY.REQUEST.APPROVE
+        }`,
         {
           method: "POST",
           headers: {

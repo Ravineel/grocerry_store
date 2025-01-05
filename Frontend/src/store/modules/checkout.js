@@ -1,3 +1,5 @@
+import { API_ENDPOINTS } from "@/constants/api";
+
 const state = () => ({
   checkoutStatus: null,
 
@@ -24,7 +26,7 @@ const actions = {
     try {
       console.log("payload: ", payload);
       const response = await fetch(
-        "http://localhost:5000/api/v1/order/checkout",
+        `${import.meta.env.VITE_API_BASE_URL}${API_ENDPOINTS.ORDER.CHECKOUT}`,
         {
           method: "POST",
           headers: {

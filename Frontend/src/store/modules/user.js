@@ -1,3 +1,5 @@
+import { API_ENDPOINTS } from "@/constants/api";
+
 // initial state
 const state = () => ({
   user: [],
@@ -39,13 +41,16 @@ const actions = {
     commit("setLoading", true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/v1/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}${API_ENDPOINTS.USER.LOGIN}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await response.json();
 
@@ -81,13 +86,16 @@ const actions = {
 
     console.log(payload);
     try {
-      const response = await fetch("http://localhost:5000/api/v1/user/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}${API_ENDPOINTS.USER.SIGNUP}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await response.json();
 
@@ -115,7 +123,9 @@ const actions = {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/admin/get/manager",
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.USER.ADMIN.GET_MANAGERS
+        }`,
         {
           method: "GET",
           headers: {
@@ -167,7 +177,9 @@ const actions = {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/admin/update/manager",
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.USER.ADMIN.UPDATE_MANAGER
+        }`,
         {
           method: "PATCH",
           headers: {
@@ -217,7 +229,9 @@ const actions = {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/admin/get/manager_data",
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.USER.ADMIN.GET_MANAGER_DATA
+        }`,
         {
           method: "GET",
           headers: {
@@ -269,7 +283,9 @@ const actions = {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/admin/get/data_count",
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.USER.ADMIN.GET_DATA_COUNT
+        }`,
         {
           method: "GET",
           headers: {
