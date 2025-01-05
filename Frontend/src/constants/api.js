@@ -1,4 +1,9 @@
 export const API_ENDPOINTS = {
+  REPORT: {
+    GET_PRODUCT_REPORT: "/manager/get/product_report",
+    GET_CSV_REPORT: "/manager/get/csv_report/",
+  },
+
   CATEGORY: {
     GET_ALL: "/category/get/all",
     GET_BY_ID: "/category/get",

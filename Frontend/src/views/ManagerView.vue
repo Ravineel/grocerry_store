@@ -75,7 +75,9 @@ export default {
     },
     async onClickDownlaodReport() {
       const res = await fetch(
-        "http://0.0.0.0:5000/api/v1/manager/get/product_report"
+        `${import.meta.env.VITE_API_BASE_URL}${
+          API_ENDPOINTS.REPORT.GET_PRODUCT_REPORT
+        }`
       );
       const data = await res.json();
 
@@ -87,12 +89,16 @@ export default {
 
         const interval = setInterval(async () => {
           const csv_res = await fetch(
-            `http://0.0.0.0:5000/api/v1/manager/get/csv_report/${task_id}`
+            `${import.meta.env.VITE_API_BASE_URL}${
+              API_ENDPOINTS.REPORT.GET_CSV_REPORT
+            }/${task_id}`
           );
           if (csv_res.ok) {
             this.$toast.success("Report will download now");
             clearInterval(interval);
-            window.location.href = `http://0.0.0.0:5000/api/v1/manager/get/csv_report/${task_id}`;
+            window.location.href = `${import.meta.env.VITE_API_BASE_URL}${
+              API_ENDPOINTS.REPORT.GET_CSV_REPORT
+            }/${task_id}`;
           }
         }, 5000);
       }
