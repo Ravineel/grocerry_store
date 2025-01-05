@@ -75,9 +75,7 @@ export default {
     },
     async onClickDownlaodReport() {
       const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}${
-          API_ENDPOINTS.REPORT.GET_PRODUCT_REPORT
-        }`
+        `https://flaskbackend.sgccl.in:8443/api/v1${API_ENDPOINTS.REPORT.GET_PRODUCT_REPORT}`
       );
       const data = await res.json();
 
