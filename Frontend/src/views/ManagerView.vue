@@ -58,6 +58,7 @@
 import ManagerProductTable from "@/components/ManagerProductTable.vue";
 import ManagerCategoryTable from "@/components/ManagerCategoryTable.vue";
 import ManagerRequestTable from "@/components/ManagerRequestTable.vue";
+import { API_ENDPOINTS } from "../constants/api";
 
 export default {
   name: "ManagerView",
