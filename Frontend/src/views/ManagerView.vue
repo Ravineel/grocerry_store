@@ -75,13 +75,6 @@ export default {
       this.$router.push("/category/create");
     },
     async onClickDownlaodReport() {
-      console.log(import.meta.env.VITE_API_BASE_URL);
-      console.log(API_ENDPOINTS.REPORT.GET_PRODUCT_REPORT);
-      console.log(
-        `${import.meta.env.VITE_API_BASE_URL}${
-          API_ENDPOINTS.REPORT.GET_PRODUCT_REPORT
-        }`
-      );
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}${
           API_ENDPOINTS.REPORT.GET_PRODUCT_REPORT
