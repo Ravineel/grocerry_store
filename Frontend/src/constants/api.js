@@ -1,7 +1,7 @@
 export const API_ENDPOINTS = {
   REPORT: {
     GET_PRODUCT_REPORT: "/manager/get/product_report",
-    GET_CSV_REPORT: "/manager/get/csv_report/",
+    GET_CSV_REPORT: "/manager/get/csv_report",
   },
 
   CATEGORY: {
