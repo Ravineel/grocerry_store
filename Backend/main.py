@@ -19,7 +19,7 @@ api = None
 def create_app():
   app = Flask(__name__, template_folder='templates', static_folder='static')
   
-  CORS(app)
+  CORS(app, resources={r"/*": {"origins": "https://grocerry-store.vercel.app", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]}})
   app.config.from_object(LocalDevelopmentConfig)
 
   db.init_app(app)
@@ -30,8 +30,8 @@ def create_app():
   app.app_context().push()
   app.config.from_mapping(
     CELERY=dict(
-      broker_url = "redis://localhost:6379/1",
-      result_backend = "redis://localhost:6379/2",
+      broker_url = "redis://localhost:6380/1",
+      result_backend = "redis://localhost:6380/2",
       enable_utc = False,
       timezone = 'Asia/Kolkata',
       broker_connection_retry_on_startup=True

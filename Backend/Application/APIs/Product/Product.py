@@ -1,4 +1,4 @@
-from flask import current_app as app, jsonify, make_response
+from flask import current_app as app, jsonify, make_response, request, redirect
 from flask_restful import Resource, reqparse, marshal_with, fields
 from Application.models import Category, Product
 from Application.db import db
@@ -195,6 +195,9 @@ class GetCsvReport(Resource):
       
       if res.ready():
         filename = res.result
+        if not request.is_secure:
+          secure_url = request.host_url.replace("http://", "https://") + f"api/v1/manager/get/csv_report/{task_id}"
+          return redirect(secure_url, code=308)
         return send_file(filename,as_attachment=True)
       else:
         print("res not ready")
